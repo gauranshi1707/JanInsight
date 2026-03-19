@@ -12,12 +12,8 @@ import {
   Flame, 
   Bell, 
   X, 
-  Volume2, 
-  VolumeX,
-  ChevronRight,
-  MapPin,
+  MapPin, 
   Clock,
-  ExternalLink,
   Filter
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -46,12 +42,11 @@ interface AlertsPanelProps {
   onAlertClick?: (alert: Alert) => void
 }
 
-// Sample alerts data
 const generateAlerts = (): Alert[] => [
   {
     id: "alert-1",
     type: "critical",
-    title: "Negative sentiment spike in Kashmere Gate",
+    title: "Sentiment spike in Kashmere Gate",
     description: "Sentiment dropped 23% in the last hour due to water supply complaints",
     location: "Ward 5 - Kashmere Gate",
     time: "2 mins ago",
@@ -63,8 +58,8 @@ const generateAlerts = (): Alert[] => [
   {
     id: "alert-2",
     type: "trending",
-    title: "Issue trending: Unemployment concerns",
-    description: "342 mentions in the last 3 hours across Twitter and WhatsApp",
+    title: "Unemployment concerns trending",
+    description: "342 mentions in the last 3 hours across social platforms",
     location: "Multiple Wards",
     time: "15 mins ago",
     metric: "342",
@@ -75,7 +70,7 @@ const generateAlerts = (): Alert[] => [
   {
     id: "alert-3",
     type: "warning",
-    title: "Rising complaints in Paharganj area",
+    title: "Rising complaints in Paharganj",
     description: "Road repair requests increased significantly overnight",
     location: "Ward 8 - Paharganj",
     time: "32 mins ago",
@@ -120,86 +115,42 @@ const generateAlerts = (): Alert[] => [
     isRead: true,
     priority: 6,
   },
-  {
-    id: "alert-7",
-    type: "trending",
-    title: "New campaign feedback surge",
-    description: "Positive response to recent cleanliness drive announcement",
-    location: "Constituency-wide",
-    time: "2 hours ago",
-    metric: "1.2K",
-    metricChange: "+540%",
-    isRead: true,
-    priority: 7,
-  },
 ]
 
 const alertConfig = {
   critical: {
     icon: AlertTriangle,
-    bgColor: "bg-destructive/10",
-    borderColor: "border-destructive/30",
-    iconColor: "text-destructive",
-    badgeClass: "bg-destructive/20 text-destructive border-destructive/30",
+    color: "text-destructive",
+    bg: "bg-destructive/10",
+    border: "border-l-destructive",
+    label: "Critical",
   },
   warning: {
     icon: TrendingDown,
-    bgColor: "bg-chart-2/10",
-    borderColor: "border-chart-2/30",
-    iconColor: "text-chart-2",
-    badgeClass: "bg-chart-2/20 text-chart-2 border-chart-2/30",
+    color: "text-chart-2",
+    bg: "bg-chart-2/10",
+    border: "border-l-chart-2",
+    label: "Warning",
   },
   trending: {
     icon: Flame,
-    bgColor: "bg-accent/10",
-    borderColor: "border-accent/30",
-    iconColor: "text-accent",
-    badgeClass: "bg-accent/20 text-accent border-accent/30",
+    color: "text-accent",
+    bg: "bg-accent/10",
+    border: "border-l-accent",
+    label: "Trending",
   },
   positive: {
     icon: TrendingUp,
-    bgColor: "bg-chart-1/10",
-    borderColor: "border-chart-1/30",
-    iconColor: "text-chart-1",
-    badgeClass: "bg-chart-1/20 text-chart-1 border-chart-1/30",
+    color: "text-chart-1",
+    bg: "bg-chart-1/10",
+    border: "border-l-chart-1",
+    label: "Positive",
   },
 }
 
 export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps) {
   const [alerts, setAlerts] = useState<Alert[]>(generateAlerts())
-  const [soundEnabled, setSoundEnabled] = useState(true)
   const [filter, setFilter] = useState<"all" | "critical" | "warning" | "trending" | "positive">("all")
-  const [isLive, setIsLive] = useState(true)
-
-  // Simulate live alerts
-  useEffect(() => {
-    if (!isLive) return
-
-    const interval = setInterval(() => {
-      // Randomly add a new alert occasionally
-      if (Math.random() > 0.7) {
-        const newAlert: Alert = {
-          id: `alert-${Date.now()}`,
-          type: ["critical", "warning", "trending"][Math.floor(Math.random() * 3)] as Alert["type"],
-          title: [
-            "New complaint surge detected",
-            "Sentiment change in progress",
-            "Issue gaining traction",
-          ][Math.floor(Math.random() * 3)],
-          description: "AI detected a pattern that requires attention",
-          location: `Ward ${Math.floor(Math.random() * 10) + 1}`,
-          time: "Just now",
-          metric: `${Math.floor(Math.random() * 100)}`,
-          metricChange: `+${Math.floor(Math.random() * 30)}%`,
-          isRead: false,
-          priority: 0,
-        }
-        setAlerts(prev => [newAlert, ...prev.slice(0, 9)])
-      }
-    }, 15000)
-
-    return () => clearInterval(interval)
-  }, [isLive])
 
   const unreadCount = alerts.filter(a => !a.isRead).length
   const criticalCount = alerts.filter(a => a.type === "critical" && !a.isRead).length
@@ -207,6 +158,14 @@ export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps
   const filteredAlerts = filter === "all" 
     ? alerts 
     : alerts.filter(a => a.type === filter)
+
+  // Group alerts by category for better organization
+  const groupedAlerts = {
+    critical: filteredAlerts.filter(a => a.type === "critical"),
+    warning: filteredAlerts.filter(a => a.type === "warning"),
+    trending: filteredAlerts.filter(a => a.type === "trending"),
+    positive: filteredAlerts.filter(a => a.type === "positive"),
+  }
 
   const markAsRead = (alertId: string) => {
     setAlerts(prev => prev.map(a => 
@@ -222,82 +181,131 @@ export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps
     setAlerts(prev => prev.map(a => ({ ...a, isRead: true })))
   }
 
+  const renderAlertGroup = (type: keyof typeof groupedAlerts, alertsList: Alert[]) => {
+    if (alertsList.length === 0) return null
+    const config = alertConfig[type]
+    
+    return (
+      <div key={type} className="space-y-2">
+        <div className="flex items-center gap-2 px-1">
+          <config.icon className={cn("h-3.5 w-3.5", config.color)} />
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {config.label}
+          </span>
+          <span className="text-xs text-muted-foreground">({alertsList.length})</span>
+        </div>
+        <div className="space-y-1.5">
+          {alertsList.map((alert) => {
+            const alertCfg = alertConfig[alert.type]
+            return (
+              <div
+                key={alert.id}
+                className={cn(
+                  "group relative rounded-md border-l-2 bg-secondary/30 p-3 transition-colors cursor-pointer hover:bg-secondary/50",
+                  alertCfg.border,
+                  !alert.isRead && "bg-secondary/50"
+                )}
+                onClick={() => {
+                  markAsRead(alert.id)
+                  onAlertClick?.(alert)
+                }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(
+                      "text-sm text-card-foreground line-clamp-1",
+                      !alert.isRead && "font-medium"
+                    )}>
+                      {alert.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                      {alert.description}
+                    </p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {alert.location}
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        {alert.time}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {alert.metric && (
+                      <Badge variant="secondary" className="text-[10px] h-5">
+                        {alert.metric}
+                        {alert.metricChange && (
+                          <span className={cn(
+                            "ml-1",
+                            alert.metricChange.startsWith("+") ? "text-chart-1" : "text-destructive"
+                          )}>
+                            {alert.metricChange}
+                          </span>
+                        )}
+                      </Badge>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        dismissAlert(alert.id)
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+                {!alert.isRead && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-r" />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Card className={cn("bg-card border-border", expanded && "h-full")}>
       <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="relative">
-            <Bell className="h-5 w-5 text-primary" />
+            <Bell className="h-4 w-4 text-primary" />
             {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+              <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
                 {unreadCount}
               </span>
             )}
           </div>
           <div>
-            <CardTitle className="text-lg text-card-foreground">Live Alerts</CardTitle>
-            <p className="text-xs text-muted-foreground">
+            <CardTitle className="text-base text-card-foreground">Alerts</CardTitle>
+            <p className="text-[10px] text-muted-foreground">
               {criticalCount > 0 && (
                 <span className="text-destructive font-medium">{criticalCount} critical</span>
               )}
-              {criticalCount > 0 && unreadCount - criticalCount > 0 && " · "}
+              {criticalCount > 0 && unreadCount - criticalCount > 0 && " | "}
               {unreadCount - criticalCount > 0 && `${unreadCount - criticalCount} new`}
               {unreadCount === 0 && "All caught up"}
             </p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          {/* Live indicator */}
-          <div className="flex items-center gap-1.5 mr-2">
-            <span className={cn(
-              "relative flex h-2 w-2",
-              isLive && "animate-pulse"
-            )}>
-              <span className={cn(
-                "absolute inline-flex h-full w-full rounded-full opacity-75",
-                isLive ? "bg-chart-1 animate-ping" : "bg-muted-foreground"
-              )} />
-              <span className={cn(
-                "relative inline-flex h-2 w-2 rounded-full",
-                isLive ? "bg-chart-1" : "bg-muted-foreground"
-              )} />
-            </span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setIsLive(!isLive)}
-              className="h-6 px-2 text-xs"
-            >
-              {isLive ? "Live" : "Paused"}
-            </Button>
-          </div>
-
-          {/* Sound toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className="h-8 w-8"
-          >
-            {soundEnabled ? (
-              <Volume2 className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <VolumeX className="h-4 w-4 text-muted-foreground" />
-            )}
-          </Button>
-
-          {/* Filter dropdown */}
+        <div className="flex items-center gap-1.5">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1 border-border">
+              <Button variant="outline" size="sm" className="h-7 gap-1 text-xs border-border">
                 <Filter className="h-3 w-3" />
-                {filter === "all" ? "All" : filter.charAt(0).toUpperCase() + filter.slice(1)}
+                {filter === "all" ? "All" : alertConfig[filter].label}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setFilter("all")}>All Alerts</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFilter("critical")}>Critical Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilter("all")}>All</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilter("critical")}>Critical</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setFilter("warning")}>Warnings</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setFilter("trending")}>Trending</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setFilter("positive")}>Positive</DropdownMenuItem>
@@ -309,7 +317,7 @@ export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps
               variant="ghost" 
               size="sm" 
               onClick={markAllAsRead}
-              className="text-xs text-muted-foreground"
+              className="h-7 text-[10px] text-muted-foreground"
             >
               Mark all read
             </Button>
@@ -318,59 +326,79 @@ export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps
       </CardHeader>
       
       <CardContent className="p-0">
-        <ScrollArea className={cn(expanded ? "h-[calc(100vh-220px)]" : "h-80")}>
-          <div className="space-y-2 p-4 pt-0">
+        <ScrollArea className={cn(expanded ? "h-[calc(100vh-220px)]" : "h-72")}>
+          <div className="space-y-4 p-4 pt-0">
             {filteredAlerts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Bell className="h-12 w-12 text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">No alerts to show</p>
-                <p className="text-xs text-muted-foreground/70">You&apos;re all caught up!</p>
+                <Bell className="h-10 w-10 text-muted-foreground/30 mb-2" />
+                <p className="text-sm text-muted-foreground">No alerts</p>
               </div>
+            ) : filter === "all" ? (
+              // Show grouped alerts when viewing all
+              <>
+                {renderAlertGroup("critical", groupedAlerts.critical)}
+                {renderAlertGroup("warning", groupedAlerts.warning)}
+                {renderAlertGroup("trending", groupedAlerts.trending)}
+                {renderAlertGroup("positive", groupedAlerts.positive)}
+              </>
             ) : (
-              filteredAlerts.map((alert) => {
-                const config = alertConfig[alert.type]
-                const Icon = config.icon
-
-                return (
-                  <div
-                    key={alert.id}
-                    className={cn(
-                      "group relative rounded-lg border p-3 transition-all cursor-pointer hover:shadow-md",
-                      config.bgColor,
-                      config.borderColor,
-                      !alert.isRead && "ring-1 ring-offset-1 ring-offset-background",
-                      !alert.isRead && alert.type === "critical" && "ring-destructive/50"
-                    )}
-                    onClick={() => {
-                      markAsRead(alert.id)
-                      onAlertClick?.(alert)
-                    }}
-                  >
-                    {/* Unread indicator */}
-                    {!alert.isRead && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-primary" />
-                    )}
-
-                    <div className="flex items-start gap-3">
-                      <div className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-                        config.bgColor
-                      )}>
-                        <Icon className={cn("h-5 w-5", config.iconColor)} />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
+              // Show flat list when filtered
+              <div className="space-y-1.5">
+                {filteredAlerts.map((alert) => {
+                  const alertCfg = alertConfig[alert.type]
+                  return (
+                    <div
+                      key={alert.id}
+                      className={cn(
+                        "group relative rounded-md border-l-2 bg-secondary/30 p-3 transition-colors cursor-pointer hover:bg-secondary/50",
+                        alertCfg.border,
+                        !alert.isRead && "bg-secondary/50"
+                      )}
+                      onClick={() => {
+                        markAsRead(alert.id)
+                        onAlertClick?.(alert)
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
                           <p className={cn(
-                            "font-medium text-sm text-card-foreground line-clamp-1",
-                            !alert.isRead && "font-semibold"
+                            "text-sm text-card-foreground line-clamp-1",
+                            !alert.isRead && "font-medium"
                           )}>
                             {alert.title}
                           </p>
+                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                            {alert.description}
+                          </p>
+                          <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                              <MapPin className="h-3 w-3" />
+                              {alert.location}
+                            </div>
+                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {alert.time}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {alert.metric && (
+                            <Badge variant="secondary" className="text-[10px] h-5">
+                              {alert.metric}
+                              {alert.metricChange && (
+                                <span className={cn(
+                                  "ml-1",
+                                  alert.metricChange.startsWith("+") ? "text-chart-1" : "text-destructive"
+                                )}>
+                                  {alert.metricChange}
+                                </span>
+                              )}
+                            </Badge>
+                          )}
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            size="sm"
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => {
                               e.stopPropagation()
                               dismissAlert(alert.id)
@@ -379,53 +407,35 @@ export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps
                             <X className="h-3 w-3" />
                           </Button>
                         </div>
-
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                          {alert.description}
-                        </p>
-
-                        <div className="flex items-center gap-3 mt-2 flex-wrap">
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <MapPin className="h-3 w-3" />
-                            {alert.location}
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {alert.time}
-                          </div>
-                          {alert.metric && (
-                            <Badge variant="outline" className={cn("text-[10px] py-0", config.badgeClass)}>
-                              {alert.metric} 
-                              {alert.metricChange && (
-                                <span className="ml-1">{alert.metricChange}</span>
-                              )}
-                            </Badge>
-                          )}
-                        </div>
                       </div>
-
-                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                  </div>
-                )
-              })
+                  )
+                })}
+              </div>
             )}
           </div>
         </ScrollArea>
 
-        {/* Quick actions footer */}
-        <div className="border-t border-border p-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        {/* Summary Footer */}
+        <div className="border-t border-border px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-destructive" /> {alerts.filter(a => a.type === "critical").length} Critical
+              <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+              {alerts.filter(a => a.type === "critical").length}
             </span>
             <span className="flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-chart-2" /> {alerts.filter(a => a.type === "warning").length} Warnings
+              <span className="h-1.5 w-1.5 rounded-full bg-chart-2" />
+              {alerts.filter(a => a.type === "warning").length}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              {alerts.filter(a => a.type === "trending").length}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-chart-1" />
+              {alerts.filter(a => a.type === "positive").length}
             </span>
           </div>
-          <Button variant="ghost" size="sm" className="gap-1 text-xs">
-            View History <ExternalLink className="h-3 w-3" />
-          </Button>
         </div>
       </CardContent>
     </Card>

@@ -19,7 +19,7 @@ import {
   ExternalLink
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { BoothData } from "./map-component"
+import { type BoothData } from "./booth-data"
 import { 
   LineChart, 
   Line, 

@@ -140,53 +140,52 @@ export function IssueTracker() {
 
   return (
     <Card className="bg-card border-border">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
         <div>
-          <CardTitle className="text-lg text-card-foreground">Active Issues</CardTitle>
-          <p className="text-sm text-muted-foreground">Prioritized by sentiment and complaint volume</p>
+          <CardTitle className="text-base text-card-foreground">Active Issues</CardTitle>
+          <p className="text-xs text-muted-foreground mt-0.5">Prioritized by sentiment impact</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 border-border text-foreground">
-          <ArrowUpRight className="h-4 w-4" />
+        <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs text-muted-foreground">
           View All
+          <ArrowUpRight className="h-3 w-3" />
         </Button>
       </CardHeader>
       <CardContent>
         {/* Filters */}
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="mb-3 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search issues..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-secondary text-foreground placeholder:text-muted-foreground"
+              className="h-8 pl-8 text-sm bg-secondary/50 text-foreground placeholder:text-muted-foreground"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <Button
-              variant={statusFilter === null ? "default" : "outline"}
+              variant={statusFilter === null ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setStatusFilter(null)}
-              className="text-xs"
+              className="h-8 text-xs"
             >
-              All ({issues.length})
+              All
             </Button>
             <Button
-              variant={statusFilter === "critical" ? "default" : "outline"}
+              variant={statusFilter === "critical" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setStatusFilter("critical")}
-              className="text-xs gap-1 border-border"
+              className="h-8 text-xs"
             >
-              <AlertCircle className="h-3 w-3" />
-              Critical ({issues.filter(i => i.status === "critical").length})
+              Critical
             </Button>
             <Button
-              variant={statusFilter === "in-progress" ? "default" : "outline"}
+              variant={statusFilter === "in-progress" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setStatusFilter("in-progress")}
-              className="text-xs border-border"
+              className="h-8 text-xs"
             >
-              In Progress ({issues.filter(i => i.status === "in-progress").length})
+              Active
             </Button>
           </div>
         </div>
@@ -279,21 +278,7 @@ export function IssueTracker() {
           </Table>
         </div>
 
-        {/* Closed Loop Indicator */}
-        <div className="mt-4 flex items-center justify-between rounded-lg bg-primary/10 p-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-              <ArrowUpRight className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-card-foreground">Closed Loop System Active</p>
-              <p className="text-xs text-muted-foreground">Issues auto-feed into AI Co-Pilot context</p>
-            </div>
-          </div>
-          <Button variant="outline" size="sm" className="border-border text-foreground">
-            Configure
-          </Button>
-        </div>
+
       </CardContent>
     </Card>
   )

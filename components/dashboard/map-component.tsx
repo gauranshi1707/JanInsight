@@ -1,24 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
-
-export interface BoothData {
-  id: number
-  name: string
-  lat: number
-  lng: number
-  sentiment: number
-  issues: number
-  category: string
-  population: number
-  feedbackCount: number
-  topIssues: string[]
-  lastUpdated: string
-  trend: "up" | "down" | "stable"
-  voterTurnout: number
-}
+import { boothData, type BoothData } from "./booth-data"
 
 interface MapComponentProps {
   selectedCategory: string | null
@@ -26,25 +9,6 @@ interface MapComponentProps {
   onBoothSelect?: (booth: BoothData | null) => void
   selectedBoothId?: number | null
 }
-
-// Enhanced booth data for Delhi constituency
-export const boothData: BoothData[] = [
-  { id: 1, name: "Booth 001 - Chandni Chowk", lat: 28.6562, lng: 77.2299, sentiment: 0.82, issues: 3, category: "Water Supply", population: 12450, feedbackCount: 847, topIssues: ["Water Supply", "Traffic", "Parking"], lastUpdated: "2 mins ago", trend: "up", voterTurnout: 68 },
-  { id: 2, name: "Booth 002 - Red Fort Area", lat: 28.6562, lng: 77.2410, sentiment: 0.65, issues: 7, category: "Drainage", population: 9820, feedbackCount: 623, topIssues: ["Drainage", "Sanitation", "Roads"], lastUpdated: "5 mins ago", trend: "down", voterTurnout: 72 },
-  { id: 3, name: "Booth 003 - Jama Masjid", lat: 28.6507, lng: 77.2334, sentiment: 0.45, issues: 12, category: "Roads", population: 15670, feedbackCount: 1124, topIssues: ["Roads", "Electricity", "Water Supply"], lastUpdated: "1 min ago", trend: "down", voterTurnout: 65 },
-  { id: 4, name: "Booth 004 - Darya Ganj", lat: 28.6448, lng: 77.2418, sentiment: 0.78, issues: 4, category: "Electricity", population: 8930, feedbackCount: 412, topIssues: ["Electricity", "Street Lights", "Parks"], lastUpdated: "8 mins ago", trend: "stable", voterTurnout: 71 },
-  { id: 5, name: "Booth 005 - Kashmere Gate", lat: 28.6678, lng: 77.2287, sentiment: 0.35, issues: 15, category: "Sanitation", population: 11200, feedbackCount: 1456, topIssues: ["Sanitation", "Garbage", "Drainage"], lastUpdated: "30 secs ago", trend: "down", voterTurnout: 58 },
-  { id: 6, name: "Booth 006 - Civil Lines", lat: 28.6804, lng: 77.2244, sentiment: 0.88, issues: 2, category: "Water Supply", population: 7650, feedbackCount: 289, topIssues: ["Water Supply", "Parks", "Security"], lastUpdated: "12 mins ago", trend: "up", voterTurnout: 78 },
-  { id: 7, name: "Booth 007 - Sadar Bazaar", lat: 28.6596, lng: 77.2050, sentiment: 0.52, issues: 9, category: "Drainage", population: 18340, feedbackCount: 987, topIssues: ["Drainage", "Traffic", "Encroachment"], lastUpdated: "3 mins ago", trend: "stable", voterTurnout: 62 },
-  { id: 8, name: "Booth 008 - Paharganj", lat: 28.6433, lng: 77.2144, sentiment: 0.41, issues: 11, category: "Roads", population: 14560, feedbackCount: 1089, topIssues: ["Roads", "Sanitation", "Security"], lastUpdated: "1 min ago", trend: "down", voterTurnout: 55 },
-  { id: 9, name: "Booth 009 - Karol Bagh", lat: 28.6519, lng: 77.1905, sentiment: 0.72, issues: 5, category: "Electricity", population: 21300, feedbackCount: 756, topIssues: ["Electricity", "Parking", "Markets"], lastUpdated: "6 mins ago", trend: "up", voterTurnout: 69 },
-  { id: 10, name: "Booth 010 - Connaught Place", lat: 28.6315, lng: 77.2167, sentiment: 0.91, issues: 1, category: "Sanitation", population: 5420, feedbackCount: 198, topIssues: ["Sanitation", "Beautification", "Events"], lastUpdated: "15 mins ago", trend: "up", voterTurnout: 82 },
-  { id: 11, name: "Booth 011 - Rajiv Chowk", lat: 28.6328, lng: 77.2197, sentiment: 0.68, issues: 6, category: "Water Supply", population: 8970, feedbackCount: 534, topIssues: ["Water Supply", "Metro Access", "Vendors"], lastUpdated: "4 mins ago", trend: "stable", voterTurnout: 67 },
-  { id: 12, name: "Booth 012 - India Gate", lat: 28.6129, lng: 77.2295, sentiment: 0.85, issues: 2, category: "Drainage", population: 3240, feedbackCount: 156, topIssues: ["Parks", "Security", "Tourism"], lastUpdated: "20 mins ago", trend: "up", voterTurnout: 75 },
-  { id: 13, name: "Booth 013 - Khan Market", lat: 28.6003, lng: 77.2272, sentiment: 0.93, issues: 1, category: "Roads", population: 4560, feedbackCount: 123, topIssues: ["Parking", "Cleanliness", "Markets"], lastUpdated: "25 mins ago", trend: "up", voterTurnout: 79 },
-  { id: 14, name: "Booth 014 - Lodhi Colony", lat: 28.5916, lng: 77.2190, sentiment: 0.77, issues: 4, category: "Electricity", population: 6780, feedbackCount: 345, topIssues: ["Electricity", "Gardens", "Heritage"], lastUpdated: "10 mins ago", trend: "stable", voterTurnout: 73 },
-  { id: 15, name: "Booth 015 - Nizamuddin", lat: 28.5930, lng: 77.2467, sentiment: 0.58, issues: 8, category: "Sanitation", population: 13450, feedbackCount: 876, topIssues: ["Sanitation", "Drainage", "Traffic"], lastUpdated: "2 mins ago", trend: "down", voterTurnout: 61 },
-]
 
 const mapTiles = {
   default: {
@@ -62,32 +26,37 @@ const mapTiles = {
 }
 
 function getSentimentColor(sentiment: number): string {
-  if (sentiment >= 0.8) return "#22c55e" // bright green
-  if (sentiment >= 0.7) return "#4ade80" // green
-  if (sentiment >= 0.6) return "#84cc16" // lime
-  if (sentiment >= 0.5) return "#eab308" // yellow  
-  if (sentiment >= 0.4) return "#f97316" // orange
-  return "#ef4444" // red
+  if (sentiment >= 0.8) return "#22c55e"
+  if (sentiment >= 0.7) return "#4ade80"
+  if (sentiment >= 0.6) return "#84cc16"
+  if (sentiment >= 0.5) return "#eab308"
+  if (sentiment >= 0.4) return "#f97316"
+  return "#ef4444"
 }
 
-function getSentimentIntensity(sentiment: number): number {
-  // Returns opacity based on distance from neutral (0.5)
-  const distance = Math.abs(sentiment - 0.5)
-  return 0.5 + distance * 0.8 // Range from 0.5 to 0.9
-}
-
-function getRadius(issues: number, isHovered: boolean, isSelected: boolean): number {
-  const baseRadius = Math.max(12, Math.min(28, issues * 1.8 + 8))
-  if (isSelected) return baseRadius * 1.4
-  if (isHovered) return baseRadius * 1.2
-  return baseRadius
+// Generate polygon coordinates for region-based heatmap using deterministic values
+function generateRegionPolygon(lat: number, lng: number, boothId: number, size: number = 0.008): [number, number][] {
+  // Create deterministic variance based on booth ID to avoid hydration mismatch
+  const seededVariance = (seed: number) => {
+    const x = Math.sin(seed * 12.9898 + boothId * 78.233) * 43758.5453
+    return ((x - Math.floor(x)) - 0.5) * 0.002
+  }
+  
+  return [
+    [lat + size + seededVariance(1), lng - size * 0.8 + seededVariance(2)],
+    [lat + size * 0.6 + seededVariance(3), lng + size + seededVariance(4)],
+    [lat - size * 0.4 + seededVariance(5), lng + size * 0.9 + seededVariance(6)],
+    [lat - size + seededVariance(7), lng + seededVariance(8)],
+    [lat - size * 0.7 + seededVariance(9), lng - size + seededVariance(10)],
+    [lat + seededVariance(11), lng - size * 1.1 + seededVariance(12)],
+  ]
 }
 
 function getTrendIcon(trend: "up" | "down" | "stable"): string {
   switch (trend) {
-    case "up": return "&#9650;" // up arrow
-    case "down": return "&#9660;" // down arrow
-    default: return "&#9644;" // dash
+    case "up": return "&#9650;"
+    case "down": return "&#9660;"
+    default: return "&#9644;"
   }
 }
 
@@ -99,27 +68,37 @@ function getTrendColor(trend: "up" | "down" | "stable"): string {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LeafletType = any
+
 export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect, selectedBoothId }: MapComponentProps) {
-  const mapRef = useRef<L.Map | null>(null)
-  const markersRef = useRef<L.CircleMarker[]>([])
-  const tileLayerRef = useRef<L.TileLayer | null>(null)
+  const mapRef = useRef<LeafletType | null>(null)
+  const layersRef = useRef<LeafletType[]>([])
+  const tileLayerRef = useRef<LeafletType | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredBoothId, setHoveredBoothId] = useState<number | null>(null)
+  const [leaflet, setLeaflet] = useState<LeafletType | null>(null)
+
+  // Dynamically import Leaflet on client side
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      import("leaflet/dist/leaflet.css")
+      setLeaflet(L.default)
+    })
+  }, [])
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return
+    if (!containerRef.current || mapRef.current || !leaflet) return
 
-    // Initialize map centered on Delhi
-    mapRef.current = L.map(containerRef.current, {
+    mapRef.current = leaflet.map(containerRef.current, {
       center: [28.6448, 77.2167],
       zoom: 13,
       zoomControl: true,
       attributionControl: true,
     })
 
-    // Initial tile layer
     const tileConfig = mapTiles[mapStyle]
-    tileLayerRef.current = L.tileLayer(tileConfig.url, {
+    tileLayerRef.current = leaflet.tileLayer(tileConfig.url, {
       maxZoom: 19,
       attribution: tileConfig.attribution,
     }).addTo(mapRef.current)
@@ -131,74 +110,71 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [leaflet])
 
-  // Update tile layer when map style changes
   useEffect(() => {
-    if (!mapRef.current) return
+    if (!mapRef.current || !leaflet) return
 
-    // Remove old tile layer
     if (tileLayerRef.current) {
       tileLayerRef.current.remove()
     }
 
-    // Add new tile layer
     const tileConfig = mapTiles[mapStyle]
-    tileLayerRef.current = L.tileLayer(tileConfig.url, {
+    tileLayerRef.current = leaflet.tileLayer(tileConfig.url, {
       maxZoom: 19,
       attribution: tileConfig.attribution,
     }).addTo(mapRef.current)
-  }, [mapStyle])
+  }, [mapStyle, leaflet])
 
-  const updateMarkers = useCallback(() => {
-    if (!mapRef.current) return
+  // Center map on selected booth
+  useEffect(() => {
+    if (!mapRef.current || !selectedBoothId) return
+    const booth = boothData.find(b => b.id === selectedBoothId)
+    if (booth) {
+      mapRef.current.setView([booth.lat, booth.lng], 15, { animate: true })
+    }
+  }, [selectedBoothId])
 
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove())
-    markersRef.current = []
+  const updateLayers = useCallback(() => {
+    if (!mapRef.current || !leaflet) return
 
-    // Filter booths by category
+    layersRef.current.forEach(layer => layer.remove())
+    layersRef.current = []
+
     const filteredBooths = selectedCategory
       ? boothData.filter(booth => booth.category === selectedCategory)
       : boothData
 
-    // Add booth markers
+    // Create region polygons for each booth
     filteredBooths.forEach(booth => {
       const isHovered = hoveredBoothId === booth.id
       const isSelected = selectedBoothId === booth.id
+      const polygonCoords = generateRegionPolygon(booth.lat, booth.lng, booth.id)
       
-      const marker = L.circleMarker([booth.lat, booth.lng], {
-        radius: getRadius(booth.issues, isHovered, isSelected),
+      const polygon = leaflet.polygon(polygonCoords, {
         fillColor: getSentimentColor(booth.sentiment),
-        fillOpacity: getSentimentIntensity(booth.sentiment),
+        fillOpacity: isSelected ? 0.85 : isHovered ? 0.75 : 0.6,
         color: isSelected ? "#ffffff" : getSentimentColor(booth.sentiment),
-        weight: isSelected ? 3 : isHovered ? 2.5 : 2,
+        weight: isSelected ? 2 : isHovered ? 1.5 : 0.5,
         opacity: 1,
-        className: `booth-marker-${booth.id}`,
       })
 
       const popupTextColor = "#1a1f35"
       
-      // Enhanced tooltip on hover
-      marker.bindTooltip(`
-        <div style="min-width: 180px; padding: 8px;">
-          <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; color: ${popupTextColor};">${booth.name}</div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      polygon.bindTooltip(`
+        <div style="min-width: 160px; padding: 6px;">
+          <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px; color: ${popupTextColor};">${booth.name}</div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
             <span style="color: #666; font-size: 11px;">Sentiment</span>
-            <span style="font-weight: 600; font-size: 12px; color: ${getSentimentColor(booth.sentiment)};">
+            <span style="font-weight: 600; font-size: 11px; color: ${getSentimentColor(booth.sentiment)};">
               ${Math.round(booth.sentiment * 100)}% 
               <span style="color: ${getTrendColor(booth.trend)};">${getTrendIcon(booth.trend)}</span>
             </span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <span style="color: #666; font-size: 11px;">Active Issues</span>
-            <span style="font-weight: 600; font-size: 12px; color: ${booth.issues > 8 ? '#ef4444' : '#1a1f35'};">${booth.issues}</span>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #666; font-size: 11px;">Issues</span>
+            <span style="font-weight: 600; font-size: 11px; color: ${booth.issues > 8 ? '#ef4444' : '#1a1f35'};">${booth.issues}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <span style="color: #666; font-size: 11px;">Feedback</span>
-            <span style="font-weight: 600; font-size: 12px; color: ${popupTextColor};">${booth.feedbackCount.toLocaleString()}</span>
-          </div>
-          <div style="font-size: 10px; color: #888; margin-top: 6px; text-align: center;">Click for details</div>
         </div>
       `, {
         permanent: false,
@@ -206,94 +182,41 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
         offset: [0, -10],
         className: 'booth-tooltip'
       })
-      
-      // Click popup with full details
-      marker.bindPopup(`
-        <div style="min-width: 280px; color: ${popupTextColor}; padding: 8px;">
-          <h3 style="font-weight: bold; margin-bottom: 12px; color: ${popupTextColor}; font-size: 15px; border-bottom: 2px solid ${getSentimentColor(booth.sentiment)}; padding-bottom: 8px;">
-            ${booth.name}
-          </h3>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-            <div style="background: #f5f5f5; padding: 8px; border-radius: 6px; text-align: center;">
-              <div style="font-size: 20px; font-weight: bold; color: ${getSentimentColor(booth.sentiment)};">${Math.round(booth.sentiment * 100)}%</div>
-              <div style="font-size: 10px; color: #666;">Sentiment</div>
-            </div>
-            <div style="background: #f5f5f5; padding: 8px; border-radius: 6px; text-align: center;">
-              <div style="font-size: 20px; font-weight: bold; color: ${booth.issues > 8 ? '#ef4444' : '#1a1f35'};">${booth.issues}</div>
-              <div style="font-size: 10px; color: #666;">Active Issues</div>
-            </div>
-          </div>
-          
-          <div style="margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Population:</span>
-              <span style="font-weight: 600;">${booth.population.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Voter Turnout:</span>
-              <span style="font-weight: 600;">${booth.voterTurnout}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Total Feedback:</span>
-              <span style="font-weight: 600;">${booth.feedbackCount.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Trend:</span>
-              <span style="font-weight: 600; color: ${getTrendColor(booth.trend)};">${booth.trend.charAt(0).toUpperCase() + booth.trend.slice(1)} ${getTrendIcon(booth.trend)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: #666;">Last Updated:</span>
-              <span style="font-weight: 600;">${booth.lastUpdated}</span>
-            </div>
-          </div>
-          
-          <div style="margin-bottom: 12px;">
-            <div style="font-size: 11px; color: #666; margin-bottom: 6px;">Top Issues:</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-              ${booth.topIssues.map(issue => `<span style="background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${issue}</span>`).join('')}
-            </div>
-          </div>
-          
-          <button onclick="window.dispatchEvent(new CustomEvent('boothSelect', {detail: ${booth.id}}))" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #d4a73a 0%, #f4c842 100%); color: #1a1f35; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-            View Full Analysis
-          </button>
-        </div>
-      `, {
-        className: "custom-popup",
-        maxWidth: 320,
+
+      polygon.on('mouseover', () => setHoveredBoothId(booth.id))
+      polygon.on('mouseout', () => setHoveredBoothId(null))
+      polygon.on('click', () => onBoothSelect?.(booth))
+
+      polygon.addTo(mapRef.current!)
+      layersRef.current.push(polygon)
+
+      // Add a small center marker for the booth
+      const centerMarker = leaflet.circleMarker([booth.lat, booth.lng], {
+        radius: isSelected ? 6 : 4,
+        fillColor: "#ffffff",
+        fillOpacity: 0.9,
+        color: getSentimentColor(booth.sentiment),
+        weight: 2,
       })
 
-      // Hover events
-      marker.on('mouseover', () => {
-        setHoveredBoothId(booth.id)
-      })
-      
-      marker.on('mouseout', () => {
-        setHoveredBoothId(null)
-      })
-      
-      // Click event
-      marker.on('click', () => {
-        if (onBoothSelect) {
-          onBoothSelect(booth)
-        }
-      })
+      centerMarker.on('mouseover', () => setHoveredBoothId(booth.id))
+      centerMarker.on('mouseout', () => setHoveredBoothId(null))
+      centerMarker.on('click', () => onBoothSelect?.(booth))
 
-      marker.addTo(mapRef.current!)
-      markersRef.current.push(marker)
+      centerMarker.addTo(mapRef.current!)
+      layersRef.current.push(centerMarker)
     })
-  }, [selectedCategory, mapStyle, hoveredBoothId, selectedBoothId, onBoothSelect])
+  }, [selectedCategory, hoveredBoothId, selectedBoothId, onBoothSelect, leaflet])
 
   useEffect(() => {
-    updateMarkers()
-  }, [updateMarkers])
+    updateLayers()
+  }, [updateLayers])
 
   return (
     <div 
       ref={containerRef} 
       className="h-full w-full"
-      style={{ minHeight: "300px", isolation: "isolate" }}
+      style={{ minHeight: "280px", isolation: "isolate" }}
     />
   )
 }

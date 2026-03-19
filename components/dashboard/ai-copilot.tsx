@@ -256,6 +256,12 @@ export function AICoPilot({ fullscreen = false }: AICoPilotProps) {
   )
 }
 
+function formatTime(date: Date): string {
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
 function MessageBubble({ 
   message, 
   onSuggestionClick,
@@ -266,6 +272,11 @@ function MessageBubble({
   compact?: boolean 
 }) {
   const isUser = message.role === "user"
+  const [timeString, setTimeString] = useState<string>("")
+
+  useEffect(() => {
+    setTimeString(formatTime(message.timestamp))
+  }, [message.timestamp])
 
   return (
     <div className={cn("flex gap-3", isUser && "flex-row-reverse")}>
@@ -302,9 +313,9 @@ function MessageBubble({
             ))}
           </div>
         )}
-        <p className="text-xs text-muted-foreground">
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </p>
+        {timeString && (
+          <p className="text-xs text-muted-foreground">{timeString}</p>
+        )}
       </div>
     </div>
   )
