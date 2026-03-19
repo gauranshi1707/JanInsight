@@ -22,8 +22,7 @@ import {
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
 import { BoothDetailPanel } from "./booth-detail-panel"
-import type { BoothData } from "./map-component"
-import { boothData } from "./map-component"
+import { boothData, type BoothData } from "./booth-data"
 
 // Dynamically import map to avoid SSR issues
 const MapComponent = dynamic(() => import("./map-component"), {

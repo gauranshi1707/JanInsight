@@ -1,24 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
-
-export interface BoothData {
-  id: number
-  name: string
-  lat: number
-  lng: number
-  sentiment: number
-  issues: number
-  category: string
-  population: number
-  feedbackCount: number
-  topIssues: string[]
-  lastUpdated: string
-  trend: "up" | "down" | "stable"
-  voterTurnout: number
-}
+import { boothData, type BoothData } from "./booth-data"
 
 interface MapComponentProps {
   selectedCategory: string | null
@@ -26,25 +9,6 @@ interface MapComponentProps {
   onBoothSelect?: (booth: BoothData | null) => void
   selectedBoothId?: number | null
 }
-
-// Enhanced booth data for Delhi constituency
-export const boothData: BoothData[] = [
-  { id: 1, name: "Booth 001 - Chandni Chowk", lat: 28.6562, lng: 77.2299, sentiment: 0.82, issues: 3, category: "Water Supply", population: 12450, feedbackCount: 847, topIssues: ["Water Supply", "Traffic", "Parking"], lastUpdated: "2 mins ago", trend: "up", voterTurnout: 68 },
-  { id: 2, name: "Booth 002 - Red Fort Area", lat: 28.6562, lng: 77.2410, sentiment: 0.65, issues: 7, category: "Drainage", population: 9820, feedbackCount: 623, topIssues: ["Drainage", "Sanitation", "Roads"], lastUpdated: "5 mins ago", trend: "down", voterTurnout: 72 },
-  { id: 3, name: "Booth 003 - Jama Masjid", lat: 28.6507, lng: 77.2334, sentiment: 0.45, issues: 12, category: "Roads", population: 15670, feedbackCount: 1124, topIssues: ["Roads", "Electricity", "Water Supply"], lastUpdated: "1 min ago", trend: "down", voterTurnout: 65 },
-  { id: 4, name: "Booth 004 - Darya Ganj", lat: 28.6448, lng: 77.2418, sentiment: 0.78, issues: 4, category: "Electricity", population: 8930, feedbackCount: 412, topIssues: ["Electricity", "Street Lights", "Parks"], lastUpdated: "8 mins ago", trend: "stable", voterTurnout: 71 },
-  { id: 5, name: "Booth 005 - Kashmere Gate", lat: 28.6678, lng: 77.2287, sentiment: 0.35, issues: 15, category: "Sanitation", population: 11200, feedbackCount: 1456, topIssues: ["Sanitation", "Garbage", "Drainage"], lastUpdated: "30 secs ago", trend: "down", voterTurnout: 58 },
-  { id: 6, name: "Booth 006 - Civil Lines", lat: 28.6804, lng: 77.2244, sentiment: 0.88, issues: 2, category: "Water Supply", population: 7650, feedbackCount: 289, topIssues: ["Water Supply", "Parks", "Security"], lastUpdated: "12 mins ago", trend: "up", voterTurnout: 78 },
-  { id: 7, name: "Booth 007 - Sadar Bazaar", lat: 28.6596, lng: 77.2050, sentiment: 0.52, issues: 9, category: "Drainage", population: 18340, feedbackCount: 987, topIssues: ["Drainage", "Traffic", "Encroachment"], lastUpdated: "3 mins ago", trend: "stable", voterTurnout: 62 },
-  { id: 8, name: "Booth 008 - Paharganj", lat: 28.6433, lng: 77.2144, sentiment: 0.41, issues: 11, category: "Roads", population: 14560, feedbackCount: 1089, topIssues: ["Roads", "Sanitation", "Security"], lastUpdated: "1 min ago", trend: "down", voterTurnout: 55 },
-  { id: 9, name: "Booth 009 - Karol Bagh", lat: 28.6519, lng: 77.1905, sentiment: 0.72, issues: 5, category: "Electricity", population: 21300, feedbackCount: 756, topIssues: ["Electricity", "Parking", "Markets"], lastUpdated: "6 mins ago", trend: "up", voterTurnout: 69 },
-  { id: 10, name: "Booth 010 - Connaught Place", lat: 28.6315, lng: 77.2167, sentiment: 0.91, issues: 1, category: "Sanitation", population: 5420, feedbackCount: 198, topIssues: ["Sanitation", "Beautification", "Events"], lastUpdated: "15 mins ago", trend: "up", voterTurnout: 82 },
-  { id: 11, name: "Booth 011 - Rajiv Chowk", lat: 28.6328, lng: 77.2197, sentiment: 0.68, issues: 6, category: "Water Supply", population: 8970, feedbackCount: 534, topIssues: ["Water Supply", "Metro Access", "Vendors"], lastUpdated: "4 mins ago", trend: "stable", voterTurnout: 67 },
-  { id: 12, name: "Booth 012 - India Gate", lat: 28.6129, lng: 77.2295, sentiment: 0.85, issues: 2, category: "Drainage", population: 3240, feedbackCount: 156, topIssues: ["Parks", "Security", "Tourism"], lastUpdated: "20 mins ago", trend: "up", voterTurnout: 75 },
-  { id: 13, name: "Booth 013 - Khan Market", lat: 28.6003, lng: 77.2272, sentiment: 0.93, issues: 1, category: "Roads", population: 4560, feedbackCount: 123, topIssues: ["Parking", "Cleanliness", "Markets"], lastUpdated: "25 mins ago", trend: "up", voterTurnout: 79 },
-  { id: 14, name: "Booth 014 - Lodhi Colony", lat: 28.5916, lng: 77.2190, sentiment: 0.77, issues: 4, category: "Electricity", population: 6780, feedbackCount: 345, topIssues: ["Electricity", "Gardens", "Heritage"], lastUpdated: "10 mins ago", trend: "stable", voterTurnout: 73 },
-  { id: 15, name: "Booth 015 - Nizamuddin", lat: 28.5930, lng: 77.2467, sentiment: 0.58, issues: 8, category: "Sanitation", population: 13450, feedbackCount: 876, topIssues: ["Sanitation", "Drainage", "Traffic"], lastUpdated: "2 mins ago", trend: "down", voterTurnout: 61 },
-]
 
 const mapTiles = {
   default: {
@@ -71,7 +35,7 @@ function getSentimentColor(sentiment: number): string {
 }
 
 // Generate polygon coordinates for region-based heatmap
-function generateRegionPolygon(lat: number, lng: number, size: number = 0.008): L.LatLngExpression[] {
+function generateRegionPolygon(lat: number, lng: number, size: number = 0.008): [number, number][] {
   const variance = () => (Math.random() - 0.5) * 0.002
   return [
     [lat + size + variance(), lng - size * 0.8 + variance()],
@@ -99,17 +63,29 @@ function getTrendColor(trend: "up" | "down" | "stable"): string {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LeafletType = any
+
 export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect, selectedBoothId }: MapComponentProps) {
-  const mapRef = useRef<L.Map | null>(null)
-  const layersRef = useRef<L.Layer[]>([])
-  const tileLayerRef = useRef<L.TileLayer | null>(null)
+  const mapRef = useRef<LeafletType | null>(null)
+  const layersRef = useRef<LeafletType[]>([])
+  const tileLayerRef = useRef<LeafletType | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredBoothId, setHoveredBoothId] = useState<number | null>(null)
+  const [leaflet, setLeaflet] = useState<LeafletType | null>(null)
+
+  // Dynamically import Leaflet on client side
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      import("leaflet/dist/leaflet.css")
+      setLeaflet(L.default)
+    })
+  }, [])
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return
+    if (!containerRef.current || mapRef.current || !leaflet) return
 
-    mapRef.current = L.map(containerRef.current, {
+    mapRef.current = leaflet.map(containerRef.current, {
       center: [28.6448, 77.2167],
       zoom: 13,
       zoomControl: true,
@@ -117,7 +93,7 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
     })
 
     const tileConfig = mapTiles[mapStyle]
-    tileLayerRef.current = L.tileLayer(tileConfig.url, {
+    tileLayerRef.current = leaflet.tileLayer(tileConfig.url, {
       maxZoom: 19,
       attribution: tileConfig.attribution,
     }).addTo(mapRef.current)
@@ -129,21 +105,21 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [leaflet])
 
   useEffect(() => {
-    if (!mapRef.current) return
+    if (!mapRef.current || !leaflet) return
 
     if (tileLayerRef.current) {
       tileLayerRef.current.remove()
     }
 
     const tileConfig = mapTiles[mapStyle]
-    tileLayerRef.current = L.tileLayer(tileConfig.url, {
+    tileLayerRef.current = leaflet.tileLayer(tileConfig.url, {
       maxZoom: 19,
       attribution: tileConfig.attribution,
     }).addTo(mapRef.current)
-  }, [mapStyle])
+  }, [mapStyle, leaflet])
 
   // Center map on selected booth
   useEffect(() => {
@@ -155,7 +131,7 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
   }, [selectedBoothId])
 
   const updateLayers = useCallback(() => {
-    if (!mapRef.current) return
+    if (!mapRef.current || !leaflet) return
 
     layersRef.current.forEach(layer => layer.remove())
     layersRef.current = []
@@ -170,7 +146,7 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
       const isSelected = selectedBoothId === booth.id
       const polygonCoords = generateRegionPolygon(booth.lat, booth.lng)
       
-      const polygon = L.polygon(polygonCoords, {
+      const polygon = leaflet.polygon(polygonCoords, {
         fillColor: getSentimentColor(booth.sentiment),
         fillOpacity: isSelected ? 0.85 : isHovered ? 0.75 : 0.6,
         color: isSelected ? "#ffffff" : getSentimentColor(booth.sentiment),
@@ -210,7 +186,7 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
       layersRef.current.push(polygon)
 
       // Add a small center marker for the booth
-      const centerMarker = L.circleMarker([booth.lat, booth.lng], {
+      const centerMarker = leaflet.circleMarker([booth.lat, booth.lng], {
         radius: isSelected ? 6 : 4,
         fillColor: "#ffffff",
         fillOpacity: 0.9,
@@ -225,7 +201,7 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
       centerMarker.addTo(mapRef.current!)
       layersRef.current.push(centerMarker)
     })
-  }, [selectedCategory, hoveredBoothId, selectedBoothId, onBoothSelect])
+  }, [selectedCategory, hoveredBoothId, selectedBoothId, onBoothSelect, leaflet])
 
   useEffect(() => {
     updateLayers()

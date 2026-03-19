@@ -112,8 +112,8 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
       </CardHeader>
       <CardContent>
         {/* Main Chart */}
-        <div className={cn("w-full", expanded ? "h-96" : "h-64")}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div className={cn("w-full", expanded ? "h-96" : "h-64")} style={{ minHeight: expanded ? 384 : 256 }}>
+          <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 384 : 256}>
             {chartType === "area" ? (
               <AreaChart data={timeRange === "week" ? weeklyData : data}>
                 <defs>

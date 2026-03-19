@@ -13,6 +13,8 @@ import { AlertsPanel } from "./alerts-panel"
 import { HistoricalTrends } from "./historical-trends"
 import { ExportPanel } from "./export-panel"
 import { QuickInsights } from "./quick-insights"
+import { TopIssuesChart } from "./top-issues-chart"
+import { SentimentTrendsChart } from "./sentiment-trends-chart"
 
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -48,10 +50,16 @@ export function Dashboard() {
                 </div>
               </section>
               
-              {/* Secondary Analytics - Issues and Insights */}
+              {/* Secondary Analytics - Issues and Charts */}
+              <section className="grid gap-6 lg:grid-cols-2">
+                <IssueTracker />
+                <TopIssuesChart />
+              </section>
+              
+              {/* Tertiary - Insights and Language */}
               <section className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
-                  <IssueTracker />
+                  <SentimentTrendsChart />
                 </div>
                 <div className="space-y-6">
                   <QuickInsights compact={false} />
@@ -69,9 +77,20 @@ export function Dashboard() {
           
           {activeTab === "sentiment" && (
             <div className="space-y-6">
+              {/* Top Row - Sentiment Trends and Top Issues */}
+              <div className="grid gap-6 lg:grid-cols-2">
+                <SentimentTrendsChart expanded />
+                <TopIssuesChart expanded />
+              </div>
+              
+              {/* Second Row - Live Analysis */}
               <SentimentChart expanded />
-              <HistoricalTrends expanded />
-              <LanguageBreakdown expanded />
+              
+              {/* Third Row - Historical and Language */}
+              <div className="grid gap-6 lg:grid-cols-2">
+                <HistoricalTrends />
+                <LanguageBreakdown />
+              </div>
             </div>
           )}
           

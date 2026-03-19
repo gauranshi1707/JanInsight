@@ -40,8 +40,8 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
       <CardContent>
         <div className={cn("grid gap-6", expanded ? "lg:grid-cols-3" : "")}>
           {/* Pie Chart */}
-          <div className={cn("h-48", expanded && "h-64")}>
-            <ResponsiveContainer width="100%" height="100%">
+          <div className={cn("h-48", expanded && "h-64")} style={{ minHeight: expanded ? 256 : 192 }}>
+            <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 256 : 192}>
               <PieChart>
                 <Pie
                   data={languageData}

@@ -230,8 +230,8 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
         </div>
 
         {/* Main Chart Area */}
-        <div className={cn("w-full", expanded ? "h-80" : "h-64")}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div className={cn("w-full", expanded ? "h-80" : "h-64")} style={{ minHeight: expanded ? 320 : 256 }}>
+          <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 320 : 256}>
             {chartView === "sentiment" ? (
               <AreaChart data={getFilteredData()}>
                 <defs>
