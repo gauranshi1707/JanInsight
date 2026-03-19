@@ -34,16 +34,21 @@ function getSentimentColor(sentiment: number): string {
   return "#ef4444"
 }
 
-// Generate polygon coordinates for region-based heatmap
-function generateRegionPolygon(lat: number, lng: number, size: number = 0.008): [number, number][] {
-  const variance = () => (Math.random() - 0.5) * 0.002
+// Generate polygon coordinates for region-based heatmap using deterministic values
+function generateRegionPolygon(lat: number, lng: number, boothId: number, size: number = 0.008): [number, number][] {
+  // Create deterministic variance based on booth ID to avoid hydration mismatch
+  const seededVariance = (seed: number) => {
+    const x = Math.sin(seed * 12.9898 + boothId * 78.233) * 43758.5453
+    return ((x - Math.floor(x)) - 0.5) * 0.002
+  }
+  
   return [
-    [lat + size + variance(), lng - size * 0.8 + variance()],
-    [lat + size * 0.6 + variance(), lng + size + variance()],
-    [lat - size * 0.4 + variance(), lng + size * 0.9 + variance()],
-    [lat - size + variance(), lng + variance()],
-    [lat - size * 0.7 + variance(), lng - size + variance()],
-    [lat + variance(), lng - size * 1.1 + variance()],
+    [lat + size + seededVariance(1), lng - size * 0.8 + seededVariance(2)],
+    [lat + size * 0.6 + seededVariance(3), lng + size + seededVariance(4)],
+    [lat - size * 0.4 + seededVariance(5), lng + size * 0.9 + seededVariance(6)],
+    [lat - size + seededVariance(7), lng + seededVariance(8)],
+    [lat - size * 0.7 + seededVariance(9), lng - size + seededVariance(10)],
+    [lat + seededVariance(11), lng - size * 1.1 + seededVariance(12)],
   ]
 }
 
@@ -144,7 +149,7 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
     filteredBooths.forEach(booth => {
       const isHovered = hoveredBoothId === booth.id
       const isSelected = selectedBoothId === booth.id
-      const polygonCoords = generateRegionPolygon(booth.lat, booth.lng)
+      const polygonCoords = generateRegionPolygon(booth.lat, booth.lng, booth.id)
       
       const polygon = leaflet.polygon(polygonCoords, {
         fillColor: getSentimentColor(booth.sentiment),

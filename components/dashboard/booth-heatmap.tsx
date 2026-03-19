@@ -181,7 +181,7 @@ export function BoothHeatmap({ fullscreen = false }: BoothHeatmapProps) {
         </div>
 
         {/* Map Container */}
-        <div className={cn("relative", fullscreen ? "h-[calc(100%-120px)]" : "h-72")}>
+        <div className={cn("relative", fullscreen ? "h-[calc(100%-120px)]" : "h-72")} suppressHydrationWarning>
           <MapComponent 
             selectedCategory={selectedCategory} 
             mapStyle={mapStyle} 
