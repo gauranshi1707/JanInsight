@@ -12,7 +12,6 @@ const stats = [
     trend: "up",
     icon: ThumbsUp,
     color: "text-chart-1",
-    bgColor: "bg-chart-1/10",
   },
   {
     label: "Active Issues",
@@ -21,7 +20,6 @@ const stats = [
     trend: "down",
     icon: AlertTriangle,
     color: "text-chart-2",
-    bgColor: "bg-chart-2/10",
   },
   {
     label: "Feedback Today",
@@ -30,7 +28,6 @@ const stats = [
     trend: "up",
     icon: MessageSquare,
     color: "text-chart-4",
-    bgColor: "bg-chart-4/10",
   },
   {
     label: "Citizens Reached",
@@ -38,8 +35,7 @@ const stats = [
     change: "+2.1K",
     trend: "up",
     icon: Users,
-    color: "text-chart-5",
-    bgColor: "bg-chart-5/10",
+    color: "text-primary",
   },
 ]
 
@@ -52,32 +48,31 @@ export function StatsCards() {
         
         return (
           <Card key={stat.label} className="bg-card border-border">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-3xl font-bold text-card-foreground">{stat.value}</p>
-                  <div className="flex items-center gap-1">
-                    <TrendIcon 
-                      className={cn(
-                        "h-4 w-4",
-                        stat.trend === "up" ? "text-chart-1" : "text-destructive"
-                      )} 
-                    />
-                    <span 
-                      className={cn(
-                        "text-sm font-medium",
-                        stat.trend === "up" ? "text-chart-1" : "text-destructive"
-                      )}
-                    >
-                      {stat.change}
-                    </span>
-                    <span className="text-sm text-muted-foreground">vs last week</span>
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{stat.label}</p>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <p className="text-2xl font-semibold text-card-foreground">{stat.value}</p>
+                    <div className="flex items-center gap-0.5">
+                      <TrendIcon 
+                        className={cn(
+                          "h-3.5 w-3.5",
+                          stat.trend === "up" ? "text-chart-1" : "text-destructive"
+                        )} 
+                      />
+                      <span 
+                        className={cn(
+                          "text-xs font-medium",
+                          stat.trend === "up" ? "text-chart-1" : "text-destructive"
+                        )}
+                      >
+                        {stat.change}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className={cn("rounded-lg p-3", stat.bgColor)}>
-                  <Icon className={cn("h-6 w-6", stat.color)} />
-                </div>
+                <Icon className={cn("h-5 w-5", stat.color)} />
               </div>
             </CardContent>
           </Card>

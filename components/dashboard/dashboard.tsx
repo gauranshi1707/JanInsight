@@ -32,28 +32,32 @@ export function Dashboard() {
         
         <main className="flex-1 overflow-y-auto p-6">
           {activeTab === "overview" && (
-            <div className="space-y-6">
-              <StatsCards />
+            <div className="space-y-8">
+              {/* Key Metrics Section */}
+              <section>
+                <StatsCards />
+              </section>
               
-              {/* New: Alerts Panel at top for visibility */}
-              <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2">
-                  <AlertsPanel />
+              {/* Primary Analytics - Map and Sentiment */}
+              <section className="grid gap-6 xl:grid-cols-5">
+                <div className="xl:col-span-3">
+                  <BoothHeatmap />
                 </div>
-                <QuickInsights compact={false} />
-              </div>
+                <div className="xl:col-span-2">
+                  <SentimentChart />
+                </div>
+              </section>
               
-              <div className="grid gap-6 lg:grid-cols-2">
-                <SentimentChart />
-                <BoothHeatmap />
-              </div>
-              
-              <div className="grid gap-6 lg:grid-cols-3">
+              {/* Secondary Analytics - Issues and Insights */}
+              <section className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
                   <IssueTracker />
                 </div>
-                <LanguageBreakdown />
-              </div>
+                <div className="space-y-6">
+                  <QuickInsights compact={false} />
+                  <LanguageBreakdown />
+                </div>
+              </section>
             </div>
           )}
           
@@ -84,21 +88,6 @@ export function Dashboard() {
                 <QuickInsights />
                 <ExportPanel />
               </div>
-            </div>
-          )}
-
-          {activeTab === "team" && (
-            <div className="space-y-6">
-              <div className="grid gap-6 lg:grid-cols-2">
-                <HistoricalTrends expanded />
-                <ExportPanel expanded />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "settings" && (
-            <div className="space-y-6">
-              <ExportPanel expanded />
             </div>
           )}
         </main>

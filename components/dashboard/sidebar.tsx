@@ -6,11 +6,9 @@ import {
   Map, 
   BarChart3, 
   Bot, 
-  Settings,
   ChevronLeft,
   ChevronRight,
-  Bell,
-  Users
+  Bell
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -24,11 +22,9 @@ interface SidebarProps {
 const menuItems = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "heatmap", label: "Booth Heatmaps", icon: Map },
-  { id: "sentiment", label: "Sentiment Engine", icon: BarChart3 },
-  { id: "copilot", label: "AI Co-Pilot", icon: Bot },
+  { id: "sentiment", label: "Sentiment Analysis", icon: BarChart3 },
   { id: "alerts", label: "Alerts", icon: Bell },
-  { id: "team", label: "Team", icon: Users },
-  { id: "settings", label: "Settings", icon: Settings },
+  { id: "copilot", label: "AI Co-Pilot", icon: Bot },
 ]
 
 export function Sidebar({ isOpen, onToggle, activeTab, onTabChange }: SidebarProps) {

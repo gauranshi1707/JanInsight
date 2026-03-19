@@ -62,32 +62,32 @@ const mapTiles = {
 }
 
 function getSentimentColor(sentiment: number): string {
-  if (sentiment >= 0.8) return "#22c55e" // bright green
-  if (sentiment >= 0.7) return "#4ade80" // green
-  if (sentiment >= 0.6) return "#84cc16" // lime
-  if (sentiment >= 0.5) return "#eab308" // yellow  
-  if (sentiment >= 0.4) return "#f97316" // orange
-  return "#ef4444" // red
+  if (sentiment >= 0.8) return "#22c55e"
+  if (sentiment >= 0.7) return "#4ade80"
+  if (sentiment >= 0.6) return "#84cc16"
+  if (sentiment >= 0.5) return "#eab308"
+  if (sentiment >= 0.4) return "#f97316"
+  return "#ef4444"
 }
 
-function getSentimentIntensity(sentiment: number): number {
-  // Returns opacity based on distance from neutral (0.5)
-  const distance = Math.abs(sentiment - 0.5)
-  return 0.5 + distance * 0.8 // Range from 0.5 to 0.9
-}
-
-function getRadius(issues: number, isHovered: boolean, isSelected: boolean): number {
-  const baseRadius = Math.max(12, Math.min(28, issues * 1.8 + 8))
-  if (isSelected) return baseRadius * 1.4
-  if (isHovered) return baseRadius * 1.2
-  return baseRadius
+// Generate polygon coordinates for region-based heatmap
+function generateRegionPolygon(lat: number, lng: number, size: number = 0.008): L.LatLngExpression[] {
+  const variance = () => (Math.random() - 0.5) * 0.002
+  return [
+    [lat + size + variance(), lng - size * 0.8 + variance()],
+    [lat + size * 0.6 + variance(), lng + size + variance()],
+    [lat - size * 0.4 + variance(), lng + size * 0.9 + variance()],
+    [lat - size + variance(), lng + variance()],
+    [lat - size * 0.7 + variance(), lng - size + variance()],
+    [lat + variance(), lng - size * 1.1 + variance()],
+  ]
 }
 
 function getTrendIcon(trend: "up" | "down" | "stable"): string {
   switch (trend) {
-    case "up": return "&#9650;" // up arrow
-    case "down": return "&#9660;" // down arrow
-    default: return "&#9644;" // dash
+    case "up": return "&#9650;"
+    case "down": return "&#9660;"
+    default: return "&#9644;"
   }
 }
 
@@ -101,7 +101,7 @@ function getTrendColor(trend: "up" | "down" | "stable"): string {
 
 export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect, selectedBoothId }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null)
-  const markersRef = useRef<L.CircleMarker[]>([])
+  const layersRef = useRef<L.Layer[]>([])
   const tileLayerRef = useRef<L.TileLayer | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredBoothId, setHoveredBoothId] = useState<number | null>(null)
@@ -109,7 +109,6 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    // Initialize map centered on Delhi
     mapRef.current = L.map(containerRef.current, {
       center: [28.6448, 77.2167],
       zoom: 13,
@@ -117,7 +116,6 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
       attributionControl: true,
     })
 
-    // Initial tile layer
     const tileConfig = mapTiles[mapStyle]
     tileLayerRef.current = L.tileLayer(tileConfig.url, {
       maxZoom: 19,
@@ -133,16 +131,13 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Update tile layer when map style changes
   useEffect(() => {
     if (!mapRef.current) return
 
-    // Remove old tile layer
     if (tileLayerRef.current) {
       tileLayerRef.current.remove()
     }
 
-    // Add new tile layer
     const tileConfig = mapTiles[mapStyle]
     tileLayerRef.current = L.tileLayer(tileConfig.url, {
       maxZoom: 19,
@@ -150,55 +145,55 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
     }).addTo(mapRef.current)
   }, [mapStyle])
 
-  const updateMarkers = useCallback(() => {
+  // Center map on selected booth
+  useEffect(() => {
+    if (!mapRef.current || !selectedBoothId) return
+    const booth = boothData.find(b => b.id === selectedBoothId)
+    if (booth) {
+      mapRef.current.setView([booth.lat, booth.lng], 15, { animate: true })
+    }
+  }, [selectedBoothId])
+
+  const updateLayers = useCallback(() => {
     if (!mapRef.current) return
 
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove())
-    markersRef.current = []
+    layersRef.current.forEach(layer => layer.remove())
+    layersRef.current = []
 
-    // Filter booths by category
     const filteredBooths = selectedCategory
       ? boothData.filter(booth => booth.category === selectedCategory)
       : boothData
 
-    // Add booth markers
+    // Create region polygons for each booth
     filteredBooths.forEach(booth => {
       const isHovered = hoveredBoothId === booth.id
       const isSelected = selectedBoothId === booth.id
+      const polygonCoords = generateRegionPolygon(booth.lat, booth.lng)
       
-      const marker = L.circleMarker([booth.lat, booth.lng], {
-        radius: getRadius(booth.issues, isHovered, isSelected),
+      const polygon = L.polygon(polygonCoords, {
         fillColor: getSentimentColor(booth.sentiment),
-        fillOpacity: getSentimentIntensity(booth.sentiment),
+        fillOpacity: isSelected ? 0.85 : isHovered ? 0.75 : 0.6,
         color: isSelected ? "#ffffff" : getSentimentColor(booth.sentiment),
-        weight: isSelected ? 3 : isHovered ? 2.5 : 2,
+        weight: isSelected ? 2 : isHovered ? 1.5 : 0.5,
         opacity: 1,
-        className: `booth-marker-${booth.id}`,
       })
 
       const popupTextColor = "#1a1f35"
       
-      // Enhanced tooltip on hover
-      marker.bindTooltip(`
-        <div style="min-width: 180px; padding: 8px;">
-          <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; color: ${popupTextColor};">${booth.name}</div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      polygon.bindTooltip(`
+        <div style="min-width: 160px; padding: 6px;">
+          <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px; color: ${popupTextColor};">${booth.name}</div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
             <span style="color: #666; font-size: 11px;">Sentiment</span>
-            <span style="font-weight: 600; font-size: 12px; color: ${getSentimentColor(booth.sentiment)};">
+            <span style="font-weight: 600; font-size: 11px; color: ${getSentimentColor(booth.sentiment)};">
               ${Math.round(booth.sentiment * 100)}% 
               <span style="color: ${getTrendColor(booth.trend)};">${getTrendIcon(booth.trend)}</span>
             </span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <span style="color: #666; font-size: 11px;">Active Issues</span>
-            <span style="font-weight: 600; font-size: 12px; color: ${booth.issues > 8 ? '#ef4444' : '#1a1f35'};">${booth.issues}</span>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #666; font-size: 11px;">Issues</span>
+            <span style="font-weight: 600; font-size: 11px; color: ${booth.issues > 8 ? '#ef4444' : '#1a1f35'};">${booth.issues}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <span style="color: #666; font-size: 11px;">Feedback</span>
-            <span style="font-weight: 600; font-size: 12px; color: ${popupTextColor};">${booth.feedbackCount.toLocaleString()}</span>
-          </div>
-          <div style="font-size: 10px; color: #888; margin-top: 6px; text-align: center;">Click for details</div>
         </div>
       `, {
         permanent: false,
@@ -206,94 +201,41 @@ export default function MapComponent({ selectedCategory, mapStyle, onBoothSelect
         offset: [0, -10],
         className: 'booth-tooltip'
       })
-      
-      // Click popup with full details
-      marker.bindPopup(`
-        <div style="min-width: 280px; color: ${popupTextColor}; padding: 8px;">
-          <h3 style="font-weight: bold; margin-bottom: 12px; color: ${popupTextColor}; font-size: 15px; border-bottom: 2px solid ${getSentimentColor(booth.sentiment)}; padding-bottom: 8px;">
-            ${booth.name}
-          </h3>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-            <div style="background: #f5f5f5; padding: 8px; border-radius: 6px; text-align: center;">
-              <div style="font-size: 20px; font-weight: bold; color: ${getSentimentColor(booth.sentiment)};">${Math.round(booth.sentiment * 100)}%</div>
-              <div style="font-size: 10px; color: #666;">Sentiment</div>
-            </div>
-            <div style="background: #f5f5f5; padding: 8px; border-radius: 6px; text-align: center;">
-              <div style="font-size: 20px; font-weight: bold; color: ${booth.issues > 8 ? '#ef4444' : '#1a1f35'};">${booth.issues}</div>
-              <div style="font-size: 10px; color: #666;">Active Issues</div>
-            </div>
-          </div>
-          
-          <div style="margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Population:</span>
-              <span style="font-weight: 600;">${booth.population.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Voter Turnout:</span>
-              <span style="font-weight: 600;">${booth.voterTurnout}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Total Feedback:</span>
-              <span style="font-weight: 600;">${booth.feedbackCount.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;">
-              <span style="color: #666;">Trend:</span>
-              <span style="font-weight: 600; color: ${getTrendColor(booth.trend)};">${booth.trend.charAt(0).toUpperCase() + booth.trend.slice(1)} ${getTrendIcon(booth.trend)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 12px;">
-              <span style="color: #666;">Last Updated:</span>
-              <span style="font-weight: 600;">${booth.lastUpdated}</span>
-            </div>
-          </div>
-          
-          <div style="margin-bottom: 12px;">
-            <div style="font-size: 11px; color: #666; margin-bottom: 6px;">Top Issues:</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-              ${booth.topIssues.map(issue => `<span style="background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${issue}</span>`).join('')}
-            </div>
-          </div>
-          
-          <button onclick="window.dispatchEvent(new CustomEvent('boothSelect', {detail: ${booth.id}}))" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #d4a73a 0%, #f4c842 100%); color: #1a1f35; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-            View Full Analysis
-          </button>
-        </div>
-      `, {
-        className: "custom-popup",
-        maxWidth: 320,
+
+      polygon.on('mouseover', () => setHoveredBoothId(booth.id))
+      polygon.on('mouseout', () => setHoveredBoothId(null))
+      polygon.on('click', () => onBoothSelect?.(booth))
+
+      polygon.addTo(mapRef.current!)
+      layersRef.current.push(polygon)
+
+      // Add a small center marker for the booth
+      const centerMarker = L.circleMarker([booth.lat, booth.lng], {
+        radius: isSelected ? 6 : 4,
+        fillColor: "#ffffff",
+        fillOpacity: 0.9,
+        color: getSentimentColor(booth.sentiment),
+        weight: 2,
       })
 
-      // Hover events
-      marker.on('mouseover', () => {
-        setHoveredBoothId(booth.id)
-      })
-      
-      marker.on('mouseout', () => {
-        setHoveredBoothId(null)
-      })
-      
-      // Click event
-      marker.on('click', () => {
-        if (onBoothSelect) {
-          onBoothSelect(booth)
-        }
-      })
+      centerMarker.on('mouseover', () => setHoveredBoothId(booth.id))
+      centerMarker.on('mouseout', () => setHoveredBoothId(null))
+      centerMarker.on('click', () => onBoothSelect?.(booth))
 
-      marker.addTo(mapRef.current!)
-      markersRef.current.push(marker)
+      centerMarker.addTo(mapRef.current!)
+      layersRef.current.push(centerMarker)
     })
-  }, [selectedCategory, mapStyle, hoveredBoothId, selectedBoothId, onBoothSelect])
+  }, [selectedCategory, hoveredBoothId, selectedBoothId, onBoothSelect])
 
   useEffect(() => {
-    updateMarkers()
-  }, [updateMarkers])
+    updateLayers()
+  }, [updateLayers])
 
   return (
     <div 
       ref={containerRef} 
       className="h-full w-full"
-      style={{ minHeight: "300px", isolation: "isolate" }}
+      style={{ minHeight: "280px", isolation: "isolate" }}
     />
   )
 }
