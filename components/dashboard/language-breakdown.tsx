@@ -48,7 +48,11 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
         <div className={cn("grid gap-6", expanded ? "lg:grid-cols-3" : "")}>
           {/* Pie Chart */}
           <div style={{ height: expanded ? 256 : 192 }}>
-            {isMounted && <ResponsiveContainer width="100%" height={expanded ? 256 : 192}>
+            {!isMounted ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            ) : <ResponsiveContainer width="100%" height={expanded ? 256 : 192}>
               <PieChart>
                 <Pie
                   data={languageData}
@@ -73,7 +77,8 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
                   formatter={(value, name) => [`${value}%`, name]}
                 />
               </PieChart>
-            </ResponsiveContainer>}
+            </ResponsiveContainer>
+            }
           </div>
 
           {/* Language List */}

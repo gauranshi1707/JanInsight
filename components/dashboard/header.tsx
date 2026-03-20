@@ -1,6 +1,7 @@
 "use client"
 
-import { Menu } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Menu, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -16,6 +17,25 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
+  const [isDark, setIsDark] = useState(true)
+
+  useEffect(() => {
+    // Check initial theme
+    const html = document.documentElement
+    setIsDark(html.classList.contains("dark"))
+  }, [])
+
+  const toggleTheme = () => {
+    const html = document.documentElement
+    if (isDark) {
+      html.classList.remove("dark")
+      setIsDark(false)
+    } else {
+      html.classList.add("dark")
+      setIsDark(true)
+    }
+  }
+
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4">
       <div className="flex items-center gap-3">
@@ -41,6 +61,14 @@ export function Header({ onMenuClick }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2 text-foreground h-8">

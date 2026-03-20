@@ -118,7 +118,11 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
       <CardContent>
         {/* Main Chart */}
         <div className="w-full" style={{ height: expanded ? 384 : 256 }}>
-          {isMounted && <ResponsiveContainer width="100%" height={expanded ? 384 : 256}>
+          {!isMounted ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : <ResponsiveContainer width="100%" height={expanded ? 384 : 256}>
             {chartType === "area" ? (
               <AreaChart data={timeRange === "week" ? weeklyData : data}>
                 <defs>
@@ -206,7 +210,8 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                 <Bar dataKey="sentiment" fill="oklch(0.7 0.18 145)" name="Sentiment %" radius={[4, 4, 0, 0]} />
               </BarChart>
             )}
-          </ResponsiveContainer>}
+          </ResponsiveContainer>
+          }
         </div>
 
         {/* Chart Type Toggle */}

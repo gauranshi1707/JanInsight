@@ -74,7 +74,11 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
       <CardContent>
         {/* Horizontal Bar Chart */}
         <div className="w-full" style={{ height: expanded ? 320 : 256 }}>
-          {isMounted && <ResponsiveContainer width="100%" height={expanded ? 320 : 256}>
+          {!isMounted ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : <ResponsiveContainer width="100%" height={expanded ? 320 : 256}>
             <BarChart
               data={issueData}
               layout="vertical"
@@ -121,7 +125,8 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>}
+          </ResponsiveContainer>
+          }
         </div>
 
         {/* Trending Issues Summary */}

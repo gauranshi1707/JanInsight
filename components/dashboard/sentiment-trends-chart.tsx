@@ -67,7 +67,11 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
       </CardHeader>
       <CardContent>
         <div className="w-full" style={{ height: expanded ? 320 : 256 }}>
-          {isMounted && <ResponsiveContainer width="100%" height={expanded ? 320 : 256}>
+          {!isMounted ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : <ResponsiveContainer width="100%" height={expanded ? 320 : 256}>
             <AreaChart
               data={sentimentTrendsData}
               margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -134,7 +138,8 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
                 name="Negative"
               />
             </AreaChart>
-          </ResponsiveContainer>}
+          </ResponsiveContainer>
+          }
         </div>
       </CardContent>
     </Card>

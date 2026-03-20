@@ -65,13 +65,26 @@ const sampleMessages: Message[] = [
   }
 ]
 
+// Track if the popup has been shown on initial load
+let hasShownOnce = false
+
 export function AICoPilot({ fullscreen = false }: AICoPilotProps) {
   const [messages, setMessages] = useState<Message[]>(sampleMessages)
   const [input, setInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
+  const [isMinimized, setIsMinimized] = useState(() => {
+    // Start minimized if we've already shown the popup once
+    return hasShownOnce
+  })
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Mark that we've shown the popup once after initial render
+  useEffect(() => {
+    if (!fullscreen && !hasShownOnce) {
+      hasShownOnce = true
+    }
+  }, [fullscreen])
 
   useEffect(() => {
     if (scrollRef.current) {
