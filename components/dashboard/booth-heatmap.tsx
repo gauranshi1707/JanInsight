@@ -201,7 +201,7 @@ export function BoothHeatmap({ fullscreen = false }: BoothHeatmapProps) {
           <div className="absolute bottom-3 left-3 z-[1000] rounded-md bg-card/95 px-3 py-2 shadow-md backdrop-blur border border-border">
             <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Sentiment</p>
             <div className="flex items-center gap-1">
-              <div className="h-2 w-20 rounded-sm bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" />
+              <div className="h-2 w-20 rounded-sm" style={{ background: "linear-gradient(to right, oklch(0.60 0.21 25), oklch(0.70 0.16 75), oklch(0.65 0.19 145))" }} />
             </div>
             <div className="mt-1 flex justify-between text-[9px] text-muted-foreground">
               <span>Low</span>

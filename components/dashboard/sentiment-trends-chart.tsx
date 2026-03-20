@@ -52,15 +52,15 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
         {/* Legend */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#4ade80]" />
+            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "oklch(0.65 0.19 145)" }} />
             <span className="text-xs text-muted-foreground">Positive</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
+            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "oklch(0.60 0.21 25)" }} />
             <span className="text-xs text-muted-foreground">Negative</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#3b82f6]" />
+            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "oklch(0.55 0.18 250)" }} />
             <span className="text-xs text-muted-foreground">Neutral</span>
           </div>
         </div>
@@ -78,16 +78,16 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
             >
               <defs>
                 <linearGradient id="positiveAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4ade80" stopOpacity={0.5}/>
-                  <stop offset="95%" stopColor="#4ade80" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0.5}/>
+                  <stop offset="95%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0.1}/>
                 </linearGradient>
                 <linearGradient id="negativeAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.5}/>
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="oklch(0.60 0.21 25)" stopOpacity={0.5}/>
+                  <stop offset="95%" stopColor="oklch(0.60 0.21 25)" stopOpacity={0.1}/>
                 </linearGradient>
                 <linearGradient id="neutralAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.5}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="oklch(0.55 0.18 250)" stopOpacity={0.5}/>
+                  <stop offset="95%" stopColor="oklch(0.55 0.18 250)" stopOpacity={0.1}/>
                 </linearGradient>
               </defs>
               <XAxis 
@@ -116,7 +116,7 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
               <Area 
                 type="monotone" 
                 dataKey="positive" 
-                stroke="#4ade80" 
+                stroke="oklch(0.65 0.19 145)" 
                 strokeWidth={2}
                 fill="url(#positiveAreaGradient)"
                 name="Positive"
@@ -124,7 +124,7 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
               <Area 
                 type="monotone" 
                 dataKey="neutral" 
-                stroke="#3b82f6" 
+                stroke="oklch(0.55 0.18 250)" 
                 strokeWidth={2}
                 fill="url(#neutralAreaGradient)"
                 name="Neutral"
@@ -132,7 +132,7 @@ export function SentimentTrendsChart({ expanded = false }: SentimentTrendsChartP
               <Area 
                 type="monotone" 
                 dataKey="negative" 
-                stroke="#ef4444" 
+                stroke="oklch(0.60 0.21 25)" 
                 strokeWidth={2}
                 fill="url(#negativeAreaGradient)"
                 name="Negative"

@@ -18,11 +18,11 @@ interface LanguageBreakdownProps {
 }
 
 const languageData = [
-  { name: "Hindi", value: 42, color: "oklch(0.75 0.18 85)", sentiment: 74 },
-  { name: "English", value: 28, color: "oklch(0.7 0.18 145)", sentiment: 71 },
-  { name: "Hinglish", value: 18, color: "oklch(0.65 0.2 45)", sentiment: 68 },
-  { name: "Punjabi", value: 7, color: "oklch(0.6 0.15 250)", sentiment: 76 },
-  { name: "Others", value: 5, color: "oklch(0.55 0.22 25)", sentiment: 65 },
+  { name: "Hindi", value: 42, color: "oklch(0.55 0.18 250)", sentiment: 74 },
+  { name: "English", value: 28, color: "oklch(0.65 0.19 145)", sentiment: 71 },
+  { name: "Hinglish", value: 18, color: "oklch(0.70 0.16 75)", sentiment: 68 },
+  { name: "Punjabi", value: 7, color: "oklch(0.65 0.18 50)", sentiment: 76 },
+  { name: "Others", value: 5, color: "oklch(0.60 0.21 25)", sentiment: 65 },
 ]
 
 const translationStats = [

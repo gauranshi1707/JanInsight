@@ -37,7 +37,7 @@ const trendingIssues = [
 ]
 
 function getBarColor(sentiment: string): string {
-  return sentiment === "positive" ? "#4ade80" : "#ef4444"
+  return sentiment === "positive" ? "oklch(0.65 0.19 145)" : "oklch(0.60 0.21 25)"
 }
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "stable" }) {
