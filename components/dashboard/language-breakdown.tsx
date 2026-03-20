@@ -93,7 +93,7 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
                     />
                     <span className="text-sm font-medium text-card-foreground">{lang.name}</span>
                   </div>
-                  <span className="text-sm text-muted-foreground">{lang.value}%</span>
+                  <span className="text-sm text-muted-foreground font-mono">{lang.value}%</span>
                 </div>
                 <Progress 
                   value={lang.value} 
@@ -109,7 +109,7 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
               <h4 className="text-sm font-semibold text-card-foreground">Translation Engine</h4>
               {translationStats.map((stat) => (
                 <div key={stat.label} className="rounded-lg bg-secondary p-3">
-                  <p className="text-2xl font-bold text-card-foreground">{stat.value}</p>
+                  <p className="text-2xl font-bold text-card-foreground font-mono">{stat.value}</p>
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
                   <p className="text-xs text-muted-foreground">{stat.subtext}</p>
                 </div>

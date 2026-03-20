@@ -53,7 +53,7 @@ export function StatsCards() {
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{stat.label}</p>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <p className="text-2xl font-semibold text-card-foreground">{stat.value}</p>
+                    <p className="text-2xl font-semibold text-card-foreground font-mono">{stat.value}</p>
                     <div className="flex items-center gap-0.5">
                       <TrendIcon 
                         className={cn(
@@ -63,7 +63,7 @@ export function StatsCards() {
                       />
                       <span 
                         className={cn(
-                          "text-xs font-medium",
+                          "text-xs font-medium font-mono",
                           stat.trend === "up" ? "text-chart-1" : "text-destructive"
                         )}
                       >

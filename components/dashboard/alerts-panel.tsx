@@ -234,11 +234,11 @@ export function AlertsPanel({ expanded = false, onAlertClick }: AlertsPanelProps
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {alert.metric && (
-                      <Badge variant="secondary" className="text-[10px] h-5">
+                      <Badge variant="secondary" className="text-[10px] h-5 font-mono">
                         {alert.metric}
                         {alert.metricChange && (
                           <span className={cn(
-                            "ml-1",
+                            "ml-1 font-mono",
                             alert.metricChange.startsWith("+") ? "text-chart-1" : "text-destructive"
                           )}>
                             {alert.metricChange}

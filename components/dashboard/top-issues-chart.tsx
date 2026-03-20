@@ -111,6 +111,7 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
                 }}
                 formatter={(value) => [`${value} mentions`, "Count"]}
                 cursor={{ fill: 'oklch(0.3 0.04 250)', opacity: 0.2 }}
+                contentStyle={{ fontFamily: '"IBM Plex Mono", monospace' }}
               />
               <Bar 
                 dataKey="mentions" 

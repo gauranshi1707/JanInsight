@@ -123,7 +123,7 @@ export function QuickInsights({ compact = false }: QuickInsightsProps) {
                 <Icon className={cn("h-3.5 w-3.5 shrink-0", config.color)} />
                 <span className="text-xs text-card-foreground line-clamp-1 flex-1">{insight.title}</span>
                 {insight.metric && (
-                  <span className={cn("text-[10px] font-medium", config.color)}>{insight.metric}</span>
+                  <span className={cn("text-[10px] font-medium font-mono", config.color)}>{insight.metric}</span>
                 )}
               </div>
             )
@@ -173,7 +173,7 @@ export function QuickInsights({ compact = false }: QuickInsightsProps) {
                     <p className="text-sm font-medium text-card-foreground">{insight.title}</p>
                     {insight.metric && (
                       <span className={cn(
-                        "text-sm font-semibold shrink-0",
+                        "text-sm font-semibold shrink-0 font-mono",
                         insight.metric.startsWith("-") ? "text-destructive" : 
                         insight.metric.startsWith("+") ? "text-chart-1" : config.color
                       )}>

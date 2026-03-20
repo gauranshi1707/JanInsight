@@ -211,9 +211,9 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
             >
               <p className="text-xs text-muted-foreground mb-1">{metric.label}</p>
               <div className="flex items-end justify-between">
-                <span className="text-xl font-bold text-card-foreground">{metric.current}</span>
+                <span className="text-xl font-bold text-card-foreground font-mono">{metric.current}</span>
                 <div className={cn(
-                  "flex items-center gap-0.5 text-xs font-medium",
+                  "flex items-center gap-0.5 text-xs font-medium font-mono",
                   metric.trend === "up" ? "text-chart-1" : "text-destructive"
                 )}>
                   {metric.trend === "up" ? (
@@ -367,7 +367,7 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
               )}
               <span className="text-sm text-card-foreground">
                 <span className={cn(
-                  "font-semibold",
+                  "font-semibold font-mono",
                   sentimentChange >= 0 ? "text-chart-1" : "text-destructive"
                 )}>
                   {sentimentChange >= 0 ? "+" : ""}{sentimentChange}%
@@ -375,7 +375,7 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
                 {" "}sentiment change
               </span>
             </div>
-            <Badge variant="outline" className="border-border text-muted-foreground">
+            <Badge variant="outline" className="border-border text-muted-foreground font-mono">
               Avg: {currentAvg}%
             </Badge>
           </div>

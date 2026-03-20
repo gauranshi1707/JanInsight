@@ -97,11 +97,11 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
             {getTrendIcon(booth.trend)}
           </div>
           <div className="flex items-end gap-2">
-            <span className={cn("text-4xl font-bold", getSentimentColor(booth.sentiment))}>
+            <span className={cn("text-4xl font-bold font-mono", getSentimentColor(booth.sentiment))}>
               {Math.round(booth.sentiment * 100)}%
             </span>
             <span className={cn(
-              "text-sm mb-1",
+              "text-sm mb-1 font-mono",
               booth.trend === "up" ? "text-chart-1" : booth.trend === "down" ? "text-destructive" : "text-muted-foreground"
             )}>
               {booth.trend === "up" ? "+5%" : booth.trend === "down" ? "-3%" : "0%"} this week
@@ -120,7 +120,7 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
               <Users className="h-4 w-4 text-chart-4" />
               <span className="text-xs text-muted-foreground">Population</span>
             </div>
-            <span className="text-lg font-semibold text-card-foreground">
+            <span className="text-lg font-semibold text-card-foreground font-mono">
               {booth.population.toLocaleString()}
             </span>
           </div>
@@ -129,7 +129,7 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
               <Vote className="h-4 w-4 text-primary" />
               <span className="text-xs text-muted-foreground">Voter Turnout</span>
             </div>
-            <span className="text-lg font-semibold text-card-foreground">
+            <span className="text-lg font-semibold text-card-foreground font-mono">
               {booth.voterTurnout}%
             </span>
           </div>
@@ -138,7 +138,7 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
               <MessageSquare className="h-4 w-4 text-chart-1" />
               <span className="text-xs text-muted-foreground">Feedback</span>
             </div>
-            <span className="text-lg font-semibold text-card-foreground">
+            <span className="text-lg font-semibold text-card-foreground font-mono">
               {booth.feedbackCount.toLocaleString()}
             </span>
           </div>
@@ -148,7 +148,7 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
               <span className="text-xs text-muted-foreground">Active Issues</span>
             </div>
             <span className={cn(
-              "text-lg font-semibold",
+              "text-lg font-semibold font-mono",
               booth.issues > 8 ? "text-destructive" : "text-card-foreground"
             )}>
               {booth.issues}

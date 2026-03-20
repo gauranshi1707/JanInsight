@@ -216,7 +216,7 @@ export function IssueTracker() {
                           <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                             {issue.category}
                           </Badge>
-                          <span>{issue.complaints} complaints</span>
+                          <span className="font-mono">{issue.complaints} complaints</span>
                           <span>via {issue.source}</span>
                         </div>
                       </div>
@@ -242,7 +242,7 @@ export function IssueTracker() {
                           />
                         </div>
                         <span className={cn(
-                          "text-sm font-medium",
+                          "text-sm font-medium font-mono",
                           issue.sentiment < 40 ? "text-destructive" :
                           issue.sentiment < 60 ? "text-chart-2" : "text-chart-1"
                         )}>
