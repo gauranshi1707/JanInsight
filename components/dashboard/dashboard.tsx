@@ -15,6 +15,7 @@ import { ExportPanel } from "./export-panel"
 import { QuickInsights } from "./quick-insights"
 import { TopIssuesChart } from "./top-issues-chart"
 import { SentimentTrendsChart } from "./sentiment-trends-chart"
+import { SettingsPanel } from "./settings-panel"
 
 export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -108,6 +109,10 @@ export function Dashboard() {
                 <ExportPanel />
               </div>
             </div>
+          )}
+
+          {activeTab === "settings" && (
+            <SettingsPanel />
           )}
         </main>
       </div>
