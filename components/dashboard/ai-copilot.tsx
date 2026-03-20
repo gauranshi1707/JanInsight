@@ -8,7 +8,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { 
-  Bot, 
   Send, 
   Mic, 
   Paperclip, 
@@ -19,7 +18,8 @@ import {
   Lightbulb,
   X,
   Maximize2,
-  Minimize2
+  Minimize2,
+  BrainCircuit
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -118,11 +118,11 @@ export function AICoPilot({ fullscreen = false }: AICoPilotProps) {
           <CardHeader className="border-b border-border pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                  <Bot className="h-5 w-5 text-primary-foreground" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/20">
+                  <BrainCircuit className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg text-card-foreground">AI Co-Pilot</CardTitle>
+                  <CardTitle className="text-lg text-card-foreground">JanAI</CardTitle>
                   <p className="text-sm text-muted-foreground">Your intelligent governance assistant</p>
                 </div>
               </div>
@@ -169,9 +169,9 @@ export function AICoPilot({ fullscreen = false }: AICoPilotProps) {
     return (
       <Button
         onClick={() => setIsMinimized(false)}
-        className="fixed bottom-6 right-6 z-[9999] h-14 w-14 rounded-full bg-primary shadow-lg hover:bg-primary/90"
+        className="fixed bottom-6 right-6 z-[9999] h-14 w-14 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:scale-105 transition-all"
       >
-        <Bot className="h-6 w-6 text-primary-foreground" />
+        <BrainCircuit className="h-6 w-6 text-white" />
       </Button>
     )
   }
@@ -182,17 +182,17 @@ export function AICoPilot({ fullscreen = false }: AICoPilotProps) {
       isExpanded ? "h-[600px] w-[450px]" : "h-[500px] w-[380px]"
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border p-4">
+      <div className="flex items-center justify-between border-b border-border p-4 bg-gradient-to-r from-card to-blue-950/20">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Bot className="h-5 w-5 text-primary-foreground" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-md shadow-blue-500/20">
+            <BrainCircuit className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-card-foreground">AI Co-Pilot</h3>
+            <h3 className="font-semibold text-card-foreground">JanAI</h3>
             <div className="flex items-center gap-1">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-chart-1 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-chart-1" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
               </span>
               <span className="text-xs text-muted-foreground">Online</span>
             </div>
@@ -282,9 +282,9 @@ function MessageBubble({
     <div className={cn("flex gap-3", isUser && "flex-row-reverse")}>
       <Avatar className={cn("h-8 w-8", compact && "h-7 w-7")}>
         <AvatarFallback className={cn(
-          isUser ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground"
+          isUser ? "bg-secondary text-secondary-foreground" : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white"
         )}>
-          {isUser ? "U" : <Bot className="h-4 w-4" />}
+          {isUser ? "U" : <BrainCircuit className="h-4 w-4" />}
         </AvatarFallback>
       </Avatar>
       <div className={cn("max-w-[80%] space-y-2", isUser && "items-end")}>
@@ -307,7 +307,7 @@ function MessageBubble({
                 className="h-7 text-xs border-border text-foreground"
                 onClick={() => onSuggestionClick(suggestion)}
               >
-                <Sparkles className="mr-1 h-3 w-3 text-primary" />
+                <Sparkles className="mr-1 h-3 w-3 text-blue-500" />
                 {suggestion}
               </Button>
             ))}
@@ -325,8 +325,8 @@ function TypingIndicator() {
   return (
     <div className="flex items-center gap-3">
       <Avatar className="h-8 w-8">
-        <AvatarFallback className="bg-primary text-primary-foreground">
-          <Bot className="h-4 w-4" />
+        <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
+          <BrainCircuit className="h-4 w-4" />
         </AvatarFallback>
       </Avatar>
       <div className="rounded-lg bg-secondary px-4 py-3">
@@ -367,8 +367,8 @@ function InputArea({
         <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-muted-foreground">
           <Mic className="h-4 w-4" />
         </Button>
-        <Button size="icon" className="h-9 w-9 shrink-0 bg-primary hover:bg-primary/90" onClick={onSend}>
-          <Send className="h-4 w-4 text-primary-foreground" />
+        <Button size="icon" className="h-9 w-9 shrink-0 bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600" onClick={onSend}>
+          <Send className="h-4 w-4 text-white" />
         </Button>
       </div>
       <p className="mt-2 text-center text-xs text-muted-foreground">
