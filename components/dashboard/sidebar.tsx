@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { 
   LayoutDashboard, 
@@ -39,8 +40,14 @@ export function Sidebar({ isOpen, onToggle, activeTab, onTabChange }: SidebarPro
     >
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-          <span className="text-lg font-bold text-primary-foreground">J</span>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+          <Image
+            src="/janinsight-logo.png"
+            alt="JanInsight"
+            width={40}
+            height={40}
+            className="h-10 w-10"
+          />
         </div>
         {isOpen && (
           <div className="flex flex-col">
