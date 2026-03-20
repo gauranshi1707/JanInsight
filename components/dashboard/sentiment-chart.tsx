@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -59,6 +59,11 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
   const [chartType, setChartType] = useState<"area" | "bar">("area")
   const [data, setData] = useState(generateSentimentData())
   const [isLive, setIsLive] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Simulate live data updates
   useEffect(() => {
@@ -112,8 +117,8 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
       </CardHeader>
       <CardContent>
         {/* Main Chart */}
-        <div className={cn("w-full", expanded ? "h-96" : "h-64")} style={{ minHeight: expanded ? 384 : 256 }}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 384 : 256}>
+        <div className="w-full" style={{ height: expanded ? 384 : 256 }}>
+          {isMounted && <ResponsiveContainer width="100%" height={expanded ? 384 : 256}>
             {chartType === "area" ? (
               <AreaChart data={timeRange === "week" ? weeklyData : data}>
                 <defs>
@@ -201,7 +206,7 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                 <Bar dataKey="sentiment" fill="oklch(0.7 0.18 145)" name="Sentiment %" radius={[4, 4, 0, 0]} />
               </BarChart>
             )}
-          </ResponsiveContainer>
+          </ResponsiveContainer>}
         </div>
 
         {/* Chart Type Toggle */}

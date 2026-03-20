@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { 
@@ -31,6 +32,12 @@ const translationStats = [
 ]
 
 export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <Card className={cn("bg-card border-border", expanded && "col-span-full")}>
       <CardHeader className="pb-2">
@@ -40,8 +47,8 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
       <CardContent>
         <div className={cn("grid gap-6", expanded ? "lg:grid-cols-3" : "")}>
           {/* Pie Chart */}
-          <div className={cn("h-48", expanded && "h-64")} style={{ minHeight: expanded ? 256 : 192 }}>
-            <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 256 : 192}>
+          <div style={{ height: expanded ? 256 : 192 }}>
+            {isMounted && <ResponsiveContainer width="100%" height={expanded ? 256 : 192}>
               <PieChart>
                 <Pie
                   data={languageData}
@@ -66,7 +73,7 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
                   formatter={(value, name) => [`${value}%`, name]}
                 />
               </PieChart>
-            </ResponsiveContainer>
+            </ResponsiveContainer>}
           </div>
 
           {/* Language List */}

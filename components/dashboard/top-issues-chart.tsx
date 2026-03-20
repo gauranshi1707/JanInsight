@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   BarChart, 
@@ -58,6 +59,12 @@ function getTrendColor(trend: "up" | "down" | "stable"): string {
 }
 
 export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <Card className={cn("bg-card border-border", expanded && "col-span-full")}>
       <CardHeader className="pb-3">
@@ -66,8 +73,8 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
       </CardHeader>
       <CardContent>
         {/* Horizontal Bar Chart */}
-        <div className={cn("w-full", expanded ? "h-80" : "h-64")} style={{ minHeight: expanded ? 320 : 256 }}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 320 : 256}>
+        <div className="w-full" style={{ height: expanded ? 320 : 256 }}>
+          {isMounted && <ResponsiveContainer width="100%" height={expanded ? 320 : 256}>
             <BarChart
               data={issueData}
               layout="vertical"
@@ -114,7 +121,7 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer>}
         </div>
 
         {/* Trending Issues Summary */}
