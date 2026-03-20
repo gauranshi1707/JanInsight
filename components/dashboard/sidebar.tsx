@@ -8,7 +8,8 @@ import {
   Bot, 
   ChevronLeft,
   ChevronRight,
-  Bell
+  Bell,
+  Settings
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -25,6 +26,7 @@ const menuItems = [
   { id: "sentiment", label: "Sentiment Analysis", icon: BarChart3 },
   { id: "alerts", label: "Alerts", icon: Bell },
   { id: "copilot", label: "JanAI", icon: Bot },
+  { id: "settings", label: "Settings", icon: Settings },
 ]
 
 export function Sidebar({ isOpen, onToggle, activeTab, onTabChange }: SidebarProps) {
