@@ -167,8 +167,8 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
               <AreaChart data={trendData}>
                 <defs>
                   <linearGradient id="boothSentimentGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.7 0.18 145)" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="oklch(0.7 0.18 145)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <XAxis 
@@ -190,7 +190,7 @@ export function BoothDetailPanel({ booth, onClose }: BoothDetailPanelProps) {
                 <Area 
                   type="monotone" 
                   dataKey="sentiment" 
-                  stroke="oklch(0.7 0.18 145)" 
+                  stroke="oklch(0.65 0.19 145)" 
                   strokeWidth={2}
                   fill="url(#boothSentimentGradient)"
                 />

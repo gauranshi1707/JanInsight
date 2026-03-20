@@ -127,11 +127,11 @@ const keyMetrics = [
 ]
 
 const issueColors: Record<string, string> = {
-  waterSupply: "oklch(0.6 0.15 250)",
-  drainage: "oklch(0.75 0.18 85)",
-  roads: "oklch(0.55 0.22 25)",
-  electricity: "oklch(0.7 0.18 145)",
-  sanitation: "oklch(0.65 0.2 45)",
+  waterSupply: "oklch(0.55 0.18 250)",
+  drainage: "oklch(0.70 0.16 75)",
+  roads: "oklch(0.60 0.21 25)",
+  electricity: "oklch(0.65 0.19 145)",
+  sanitation: "oklch(0.65 0.18 50)",
 }
 
 export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
@@ -236,12 +236,12 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
               <AreaChart data={getFilteredData()}>
                 <defs>
                   <linearGradient id="sentimentGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.7 0.18 145)" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="oklch(0.7 0.18 145)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="feedbackGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.6 0.15 250)" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="oklch(0.6 0.15 250)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="oklch(0.55 0.18 250)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="oklch(0.55 0.18 250)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.3 0.04 250)" />
@@ -277,15 +277,15 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
                 <ReferenceLine 
                   yAxisId="left"
                   y={70} 
-                  stroke="oklch(0.75 0.18 85)" 
+                  stroke="oklch(0.70 0.16 75)" 
                   strokeDasharray="5 5" 
-                  label={{ value: "Target", fill: "oklch(0.75 0.18 85)", fontSize: 10 }}
+                  label={{ value: "Target", fill: "oklch(0.70 0.16 75)", fontSize: 10 }}
                 />
                 <Area 
                   yAxisId="left"
                   type="monotone" 
                   dataKey="sentiment" 
-                  stroke="oklch(0.7 0.18 145)" 
+                  stroke="oklch(0.65 0.19 145)" 
                   strokeWidth={2}
                   fill="url(#sentimentGradient)"
                   name="Sentiment %"
@@ -294,7 +294,7 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
                   yAxisId="right"
                   type="monotone" 
                   dataKey="issues" 
-                  stroke="oklch(0.55 0.22 25)" 
+                  stroke="oklch(0.60 0.21 25)" 
                   strokeWidth={2}
                   dot={false}
                   name="Active Issues"
@@ -337,9 +337,9 @@ export function HistoricalTrends({ expanded = false }: HistoricalTrendsProps) {
                 <Line 
                   type="monotone" 
                   dataKey="thisWeek" 
-                  stroke="oklch(0.7 0.18 145)" 
+                  stroke="oklch(0.65 0.19 145)" 
                   strokeWidth={3}
-                  dot={{ fill: "oklch(0.7 0.18 145)", strokeWidth: 2 }}
+                  dot={{ fill: "oklch(0.65 0.19 145)", strokeWidth: 2 }}
                   name="This Week"
                 />
                 <Line 

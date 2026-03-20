@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   BarChart, 
@@ -36,7 +37,7 @@ const trendingIssues = [
 ]
 
 function getBarColor(sentiment: string): string {
-  return sentiment === "positive" ? "#4ade80" : "#ef4444"
+  return sentiment === "positive" ? "oklch(0.65 0.19 145)" : "oklch(0.60 0.21 25)"
 }
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "stable" }) {
@@ -58,6 +59,12 @@ function getTrendColor(trend: "up" | "down" | "stable"): string {
 }
 
 export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <Card className={cn("bg-card border-border", expanded && "col-span-full")}>
       <CardHeader className="pb-3">
@@ -66,8 +73,12 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
       </CardHeader>
       <CardContent>
         {/* Horizontal Bar Chart */}
-        <div className={cn("w-full", expanded ? "h-80" : "h-64")} style={{ minHeight: expanded ? 320 : 256 }}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 320 : 256}>
+        <div className="w-full" style={{ height: expanded ? 320 : 256 }}>
+          {!isMounted ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : <ResponsiveContainer width="100%" height={expanded ? 320 : 256}>
             <BarChart
               data={issueData}
               layout="vertical"
@@ -115,6 +126,7 @@ export function TopIssuesChart({ expanded = false }: TopIssuesChartProps) {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          }
         </div>
 
         {/* Trending Issues Summary */}

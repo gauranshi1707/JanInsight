@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -59,6 +59,11 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
   const [chartType, setChartType] = useState<"area" | "bar">("area")
   const [data, setData] = useState(generateSentimentData())
   const [isLive, setIsLive] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Simulate live data updates
   useEffect(() => {
@@ -112,22 +117,26 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
       </CardHeader>
       <CardContent>
         {/* Main Chart */}
-        <div className={cn("w-full", expanded ? "h-96" : "h-64")} style={{ minHeight: expanded ? 384 : 256 }}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 384 : 256}>
+        <div className="w-full" style={{ height: expanded ? 384 : 256 }}>
+          {!isMounted ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : <ResponsiveContainer width="100%" height={expanded ? 384 : 256}>
             {chartType === "area" ? (
               <AreaChart data={timeRange === "week" ? weeklyData : data}>
                 <defs>
                   <linearGradient id="positiveGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.7 0.18 145)" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="oklch(0.7 0.18 145)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="oklch(0.65 0.19 145)" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="negativeGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.55 0.22 25)" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="oklch(0.55 0.22 25)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="oklch(0.60 0.21 25)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="oklch(0.60 0.21 25)" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="neutralGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.75 0.18 85)" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="oklch(0.75 0.18 85)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="oklch(0.70 0.16 75)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="oklch(0.70 0.16 75)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.3 0.04 250)" />
@@ -150,7 +159,7 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                   <Area 
                     type="monotone" 
                     dataKey="sentiment" 
-                    stroke="oklch(0.7 0.18 145)" 
+                    stroke="oklch(0.65 0.19 145)" 
                     fill="url(#positiveGradient)"
                     name="Sentiment %"
                   />
@@ -160,7 +169,7 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                       type="monotone" 
                       dataKey="positive" 
                       stackId="1"
-                      stroke="oklch(0.7 0.18 145)" 
+                      stroke="oklch(0.65 0.19 145)" 
                       fill="url(#positiveGradient)"
                       name="Positive"
                     />
@@ -168,7 +177,7 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                       type="monotone" 
                       dataKey="neutral" 
                       stackId="1"
-                      stroke="oklch(0.75 0.18 85)" 
+                      stroke="oklch(0.70 0.16 75)" 
                       fill="url(#neutralGradient)"
                       name="Neutral"
                     />
@@ -176,7 +185,7 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                       type="monotone" 
                       dataKey="negative" 
                       stackId="1"
-                      stroke="oklch(0.55 0.22 25)" 
+                      stroke="oklch(0.60 0.21 25)" 
                       fill="url(#negativeGradient)"
                       name="Negative"
                     />
@@ -197,11 +206,12 @@ export function SentimentChart({ expanded = false }: SentimentChartProps) {
                   }}
                 />
                 <Legend />
-                <Bar dataKey="count" fill="oklch(0.75 0.18 85)" name="Feedback Count" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="sentiment" fill="oklch(0.7 0.18 145)" name="Sentiment %" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="oklch(0.55 0.18 250)" name="Feedback Count" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="sentiment" fill="oklch(0.65 0.19 145)" name="Sentiment %" radius={[4, 4, 0, 0]} />
               </BarChart>
             )}
           </ResponsiveContainer>
+          }
         </div>
 
         {/* Chart Type Toggle */}

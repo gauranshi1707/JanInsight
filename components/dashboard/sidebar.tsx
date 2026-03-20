@@ -24,7 +24,7 @@ const menuItems = [
   { id: "heatmap", label: "Booth Heatmaps", icon: Map },
   { id: "sentiment", label: "Sentiment Analysis", icon: BarChart3 },
   { id: "alerts", label: "Alerts", icon: Bell },
-  { id: "copilot", label: "AI Co-Pilot", icon: Bot },
+  { id: "copilot", label: "JanAI", icon: Bot },
 ]
 
 export function Sidebar({ isOpen, onToggle, activeTab, onTabChange }: SidebarProps) {

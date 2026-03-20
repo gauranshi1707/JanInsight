@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { 
@@ -17,11 +18,11 @@ interface LanguageBreakdownProps {
 }
 
 const languageData = [
-  { name: "Hindi", value: 42, color: "oklch(0.75 0.18 85)", sentiment: 74 },
-  { name: "English", value: 28, color: "oklch(0.7 0.18 145)", sentiment: 71 },
-  { name: "Hinglish", value: 18, color: "oklch(0.65 0.2 45)", sentiment: 68 },
-  { name: "Punjabi", value: 7, color: "oklch(0.6 0.15 250)", sentiment: 76 },
-  { name: "Others", value: 5, color: "oklch(0.55 0.22 25)", sentiment: 65 },
+  { name: "Hindi", value: 42, color: "oklch(0.55 0.18 250)", sentiment: 74 },
+  { name: "English", value: 28, color: "oklch(0.65 0.19 145)", sentiment: 71 },
+  { name: "Hinglish", value: 18, color: "oklch(0.70 0.16 75)", sentiment: 68 },
+  { name: "Punjabi", value: 7, color: "oklch(0.65 0.18 50)", sentiment: 76 },
+  { name: "Others", value: 5, color: "oklch(0.60 0.21 25)", sentiment: 65 },
 ]
 
 const translationStats = [
@@ -31,6 +32,12 @@ const translationStats = [
 ]
 
 export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <Card className={cn("bg-card border-border", expanded && "col-span-full")}>
       <CardHeader className="pb-2">
@@ -40,8 +47,12 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
       <CardContent>
         <div className={cn("grid gap-6", expanded ? "lg:grid-cols-3" : "")}>
           {/* Pie Chart */}
-          <div className={cn("h-48", expanded && "h-64")} style={{ minHeight: expanded ? 256 : 192 }}>
-            <ResponsiveContainer width="100%" height="100%" minHeight={expanded ? 256 : 192}>
+          <div style={{ height: expanded ? 256 : 192 }}>
+            {!isMounted ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            ) : <ResponsiveContainer width="100%" height={expanded ? 256 : 192}>
               <PieChart>
                 <Pie
                   data={languageData}
@@ -67,6 +78,7 @@ export function LanguageBreakdown({ expanded = false }: LanguageBreakdownProps) 
                 />
               </PieChart>
             </ResponsiveContainer>
+            }
           </div>
 
           {/* Language List */}
